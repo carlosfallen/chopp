@@ -1,0 +1,26 @@
+name = "chopp-delivery"
+main = "src/api/index.ts"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "dist"
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "chopp_delivery_db"
+database_id = "sua-database-id"
+
+# R2 Storage (imagens)
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "chopp-delivery-images"
+
+# KV Storage (cache)
+[[kv_namespaces]]
+binding = "CACHE"
+id = "seu-kv-id"
+
+[build]
+command = "npm run build"
+
+[vars]
+ENVIRONMENT = "production"

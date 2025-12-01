@@ -1,0 +1,345 @@
+import { createSignal, For, Show, onMount } from 'solid-js';
+import './ProductsManager.css';
+
+type Product = {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  sensorNotes: string;
+  idealFor: string;
+  pricePerLiter: number;
+  availableSizes: number[];
+  imageUrl?: string;
+  featured: boolean;
+  active: boolean;
+};
+
+export default function ProductsManager() {
+  const [products, setProducts] = createSignal<Product[]>([]);
+  const [loading, setLoading] = createSignal(true);
+  const [editingProduct, setEditingProduct] = createSignal<Product | null>(null);
+  const [showModal, setShowModal] = createSignal(false);
+  
+  // Load products from API
+  onMount(async () => {
+    await loadProducts();
+  });
+  
+  const loadProducts = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/products');
+      const data = await response.json();
+      setProducts(data.products || []);
+    } catch (error) {
+      console.error('Error loading products:', error);
+      alert('Erro ao carregar produtos');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const saveProduct = async (product: Product) => {
+    try {
+      const method = product.id ? 'PUT' : 'POST';
+      const url = product.id ? `/api/products/${product.id}` : '/api/products';
+      
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product)
+      });
+      
+      if (!response.ok) throw new Error('Failed to save product');
+      
+      await loadProducts();
+      setShowModal(false);
+      setEditingProduct(null);
+      alert('Produto salvo com sucesso!');
+    } catch (error) {
+      console.error('Error saving product:', error);
+      alert('Erro ao salvar produto');
+    }
+  };
+  
+  const deleteProduct = async (id: string) => {
+    if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+    
+    try {
+      const response = await fetch(`/api/products/${id}`, {
+        method: 'DELETE'
+      });
+      
+      if (!response.ok) throw new Error('Failed to delete product');
+      
+      await loadProducts();
+      alert('Produto excluído com sucesso!');
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      alert('Erro ao excluir produto');
+    }
+  };
+  
+  const toggleActive = async (product: Product) => {
+    await saveProduct({ ...product, active: !product.active });
+  };
+  
+  const toggleFeatured = async (product: Product) => {
+    await saveProduct({ ...product, featured: !product.featured });
+  };
+  
+  return (
+    <div class="products-manager">
+      <Show when={loading()}>
+        <div class="loading">Carregando produtos...</div>
+      </Show>
+      
+      <Show when={!loading()}>
+        <div class="products-grid">
+          <For each={products()}>
+            {(product) => (
+              <div class="product-card-admin" classList={{ inactive: !product.active }}>
+                <div class="product-image-admin">
+                  {product.imageUrl ? (
+                    <img src={product.imageUrl} alt={product.name} />
+                  ) : (
+                    <div class="image-placeholder">🍺</div>
+                  )}
+                  
+                  <div class="product-badges">
+                    <Show when={product.featured}>
+                      <span class="badge badge-featured">Destaque</span>
+                    </Show>
+                    <Show when={!product.active}>
+                      <span class="badge badge-inactive">Inativo</span>
+                    </Show>
+                  </div>
+                </div>
+                
+                <div class="product-info-admin">
+                  <div class="product-header-admin">
+                    <h3>{product.name}</h3>
+                    <span class="product-category">{product.category}</span>
+                  </div>
+                  
+                  <p class="product-description-admin">{product.description}</p>
+                  
+                  <div class="product-details-admin">
+                    <div class="detail-item">
+                      <strong>Preço:</strong>
+                      <span>R$ {product.pricePerLiter.toFixed(2)}/L</span>
+                    </div>
+                    <div class="detail-item">
+                      <strong>Tamanhos:</strong>
+                      <span>{product.availableSizes.join('L, ')}L</span>
+                    </div>
+                  </div>
+                  
+                  <div class="product-actions">
+                    <button 
+                      class="btn-icon" 
+                      onClick={() => {
+                        setEditingProduct(product);
+                        setShowModal(true);
+                      }}
+                      title="Editar"
+                    >
+                      ✏️
+                    </button>
+                    
+                    <button 
+                      class="btn-icon"
+                      onClick={() => toggleFeatured(product)}
+                      title={product.featured ? 'Remover destaque' : 'Destacar'}
+                    >
+                      {product.featured ? '⭐' : '☆'}
+                    </button>
+                    
+                    <button 
+                      class="btn-icon"
+                      onClick={() => toggleActive(product)}
+                      title={product.active ? 'Desativar' : 'Ativar'}
+                    >
+                      {product.active ? '✓' : '✗'}
+                    </button>
+                    
+                    <button 
+                      class="btn-icon btn-danger"
+                      onClick={() => deleteProduct(product.id)}
+                      title="Excluir"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </For>
+        </div>
+      </Show>
+      
+      <Show when={showModal()}>
+        <ProductModal 
+          product={editingProduct()}
+          onSave={saveProduct}
+          onClose={() => {
+            setShowModal(false);
+            setEditingProduct(null);
+          }}
+        />
+      </Show>
+    </div>
+  );
+}
+
+// Modal Component
+function ProductModal(props: {
+  product: Product | null;
+  onSave: (product: Product) => void;
+  onClose: () => void;
+}) {
+  const [formData, setFormData] = createSignal<Product>(
+    props.product || {
+      id: '',
+      name: '',
+      category: 'Pilsen',
+      description: '',
+      sensorNotes: '',
+      idealFor: '',
+      pricePerLiter: 0,
+      availableSizes: [30, 50],
+      featured: false,
+      active: true
+    }
+  );
+  
+  const handleSubmit = (e: Event) => {
+    e.preventDefault();
+    props.onSave(formData());
+  };
+  
+  return (
+    <div class="modal-overlay" onClick={props.onClose}>
+      <div class="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div class="modal-header">
+          <h2>{props.product ? 'Editar Produto' : 'Novo Produto'}</h2>
+          <button class="modal-close" onClick={props.onClose}>✕</button>
+        </div>
+        
+        <form onSubmit={handleSubmit} class="product-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nome do Produto *</label>
+              <input 
+                type="text" 
+                required
+                value={formData().name}
+                onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
+              />
+            </div>
+            
+            <div class="form-group">
+              <label>Categoria *</label>
+              <select 
+                value={formData().category}
+                onChange={(e) => setFormData({ ...formData(), category: e.currentTarget.value })}
+              >
+                <option value="Pilsen">Pilsen</option>
+                <option value="IPA">IPA</option>
+                <option value="Weiss">Weiss</option>
+                <option value="Lager">Lager</option>
+                <option value="Ale">Ale</option>
+                <option value="Porter">Porter</option>
+                <option value="Belgian">Belgian</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Descrição *</label>
+            <textarea 
+              required
+              rows="3"
+              value={formData().description}
+              onInput={(e) => setFormData({ ...formData(), description: e.currentTarget.value })}
+            />
+          </div>
+          
+          <div class="form-group">
+            <label>Notas Sensoriais</label>
+            <input 
+              type="text"
+              placeholder="Ex: Dourado brilhante, espuma cremosa"
+              value={formData().sensorNotes}
+              onInput={(e) => setFormData({ ...formData(), sensorNotes: e.currentTarget.value })}
+            />
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Ideal para</label>
+              <input 
+                type="text"
+                placeholder="Ex: 15-30 convidados"
+                value={formData().idealFor}
+                onInput={(e) => setFormData({ ...formData(), idealFor: e.currentTarget.value })}
+              />
+            </div>
+            
+            <div class="form-group">
+              <label>Preço por Litro (R$) *</label>
+              <input 
+                type="number"
+                step="0.01"
+                min="0"
+                required
+                value={formData().pricePerLiter}
+                onInput={(e) => setFormData({ ...formData(), pricePerLiter: parseFloat(e.currentTarget.value) })}
+              />
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>URL da Imagem</label>
+            <input 
+              type="url"
+              placeholder="https://..."
+              value={formData().imageUrl || ''}
+              onInput={(e) => setFormData({ ...formData(), imageUrl: e.currentTarget.value })}
+            />
+          </div>
+          
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox"
+                checked={formData().featured}
+                onChange={(e) => setFormData({ ...formData(), featured: e.currentTarget.checked })}
+              />
+              <span>Produto em destaque</span>
+            </label>
+            
+            <label class="checkbox-label">
+              <input 
+                type="checkbox"
+                checked={formData().active}
+                onChange={(e) => setFormData({ ...formData(), active: e.currentTarget.checked })}
+              />
+              <span>Produto ativo</span>
+            </label>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onClick={props.onClose}>
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Salvar Produto
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

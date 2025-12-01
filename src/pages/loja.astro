@@ -1,0 +1,38 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ShopHeader from '../components/shop/ShopHeader';
+import ProductGrid from '../components/shop/ProductGrid';
+import Cart from '../components/shop/Cart';
+import '../styles/global.css';
+---
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loja - NOME_DA_MARCA | Compre Chopp Online</title>
+  <meta name="description" content="Escolha seu chopp preferido e faça seu pedido online. Chopeira grátis, entrega rápida e instalação profissional.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <Header />
+  <main class="shop-main">
+    <ShopHeader client:load />
+    <ProductGrid client:load />
+    <Cart client:load />
+  </main>
+  <Footer />
+</body>
+</html>
+
+<style>
+  .shop-main {
+    min-height: 100vh;
+    padding-top: 80px;
+  }
+</style>

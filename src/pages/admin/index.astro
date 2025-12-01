@@ -1,0 +1,216 @@
+---
+// src/pages/admin/index.astro
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Dashboard Admin">
+  <div class="admin-dashboard">
+    <div class="dashboard-header">
+      <h1>Dashboard Admin</h1>
+      <p>Gerencie todo o conteúdo do site</p>
+    </div>
+    
+    <div class="dashboard-cards">
+      <a href="/admin/products" class="dashboard-card">
+        <div class="card-icon">🍺</div>
+        <div class="card-content">
+          <h3>Produtos</h3>
+          <p>Gerenciar chopps e preços</p>
+          <span class="card-badge">8 produtos</span>
+        </div>
+      </a>
+      
+      <a href="/admin/images" class="dashboard-card">
+        <div class="card-icon">📸</div>
+        <div class="card-content">
+          <h3>Imagens</h3>
+          <p>Upload e gerenciamento</p>
+          <span class="card-badge">Cloudflare R2</span>
+        </div>
+      </a>
+      
+      <a href="/admin/settings" class="dashboard-card">
+        <div class="card-icon">⚙️</div>
+        <div class="card-content">
+          <h3>Configurações</h3>
+          <p>Textos, contatos, SEO</p>
+          <span class="card-badge">15 itens</span>
+        </div>
+      </a>
+      
+      <a href="/admin/brands" class="dashboard-card">
+        <div class="card-icon">🏢</div>
+        <div class="card-content">
+          <h3>Marcas Parceiras</h3>
+          <p>Logos e ordenação</p>
+          <span class="card-badge">6 marcas</span>
+        </div>
+      </a>
+      
+      <a href="/admin/testimonials" class="dashboard-card">
+        <div class="card-icon">💬</div>
+        <div class="card-content">
+          <h3>Depoimentos</h3>
+          <p>Avaliações de clientes</p>
+          <span class="card-badge">4 ativos</span>
+        </div>
+      </a>
+      
+      <a href="/admin/orders" class="dashboard-card">
+        <div class="card-icon">📦</div>
+        <div class="card-content">
+          <h3>Pedidos</h3>
+          <p>Histórico e status</p>
+          <span class="card-badge">23 total</span>
+        </div>
+      </a>
+    </div>
+    
+    <div class="dashboard-stats">
+      <div class="stat-card">
+        <div class="stat-value">127</div>
+        <div class="stat-label">Pedidos este mês</div>
+        <div class="stat-trend positive">+18%</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-value">R$ 45.2k</div>
+        <div class="stat-label">Faturamento</div>
+        <div class="stat-trend positive">+25%</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-value">4.9</div>
+        <div class="stat-label">Avaliação média</div>
+        <div class="stat-trend neutral">⭐⭐⭐⭐⭐</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-value">892</div>
+        <div class="stat-label">Visitantes hoje</div>
+        <div class="stat-trend positive">+12%</div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .admin-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+  }
+  
+  .dashboard-header {
+    margin-bottom: var(--spacing-2xl);
+  }
+  
+  .dashboard-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .dashboard-header p {
+    color: var(--color-text-muted);
+    font-size: 1.125rem;
+  }
+  
+  .dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+  }
+  
+  .dashboard-card {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-xl);
+    background: var(--color-bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius-lg);
+    transition: all var(--transition-smooth);
+    cursor: pointer;
+  }
+  
+  .dashboard-card:hover {
+    border-color: var(--color-accent-gold);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .card-icon {
+    font-size: 3rem;
+    flex-shrink: 0;
+  }
+  
+  .card-content {
+    flex: 1;
+  }
+  
+  .card-content h3 {
+    font-size: 1.25rem;
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-text-primary);
+  }
+  
+  .card-content p {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .card-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(212, 175, 55, 0.15);
+    color: var(--color-accent-gold);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  
+  .dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+  }
+  
+  .stat-card {
+    padding: var(--spacing-xl);
+    background: var(--color-bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius-lg);
+  }
+  
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--color-accent-gold);
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .stat-label {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .stat-trend {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  
+  .stat-trend.positive {
+    background: rgba(40, 167, 69, 0.15);
+    color: #28a745;
+  }
+  
+  .stat-trend.neutral {
+    background: rgba(212, 175, 55, 0.15);
+    color: var(--color-accent-gold);
+  }
+</style>

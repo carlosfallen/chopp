@@ -1,0 +1,114 @@
+.admin-body {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-bg-primary);
+}
+
+.admin-sidebar {
+  width: 280px;
+  background: var(--color-bg-secondary);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+}
+
+.sidebar-header {
+  padding: var(--spacing-xl);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-header h2 {
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, var(--color-accent-gold), var(--color-accent-amber));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.admin-badge {
+  padding: 4px 8px;
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--color-accent-gold);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-secondary);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-fast);
+  font-weight: 500;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-primary);
+}
+
+.nav-item.active {
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--color-accent-gold);
+}
+
+.nav-icon {
+  font-size: 1.25rem;
+}
+
+.sidebar-footer {
+  padding: var(--spacing-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.logout-btn:hover {
+  background: rgba(220, 53, 69, 0.15);
+  color: #dc3545;
+}
+
+.admin-main {
+  flex: 1;
+  margin-left: 280px;
+  min-height: 100vh;
+}
+
+@media (max-width: 968px) {
+  .admin-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .admin-main {
+    margin-left: 0;
+  }
+}
