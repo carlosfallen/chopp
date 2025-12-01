@@ -1,0 +1,100 @@
+.chopp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
+}
+
+.chopp-card {
+  background: var(--color-bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-smooth);
+}
+
+.chopp-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-gold);
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+.chopp-image {
+  height: 200px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 191, 0, 0.05));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chopp-image-placeholder {
+  font-size: 4rem;
+  opacity: 0.6;
+}
+
+.chopp-content {
+  padding: var(--spacing-lg);
+}
+
+.chopp-category {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--color-accent-gold);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--spacing-sm);
+}
+
+.chopp-name {
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-primary);
+}
+
+.chopp-description {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+  line-height: 1.5;
+}
+
+.chopp-sensor {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin-bottom: var(--spacing-md);
+}
+
+.chopp-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.chopp-price {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.chopp-price strong {
+  color: var(--color-accent-gold);
+  font-size: 1.125rem;
+}
+
+.btn-sm {
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .chopp-grid {
+    grid-template-columns: 1fr;
+  }
+}

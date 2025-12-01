@@ -1,0 +1,49 @@
+---
+import Header from '../components/Header.astro';
+import HeroSection from '../components/HeroSection.astro';
+import BrandsStrip from '../components/BrandsStrip.astro';
+import HowItWorksSection from '../components/HowItWorksSection.astro';
+import ChoppGridSection from '../components/ChoppGridSection.astro';
+import ExperienceSection from '../components/ExperienceSection.astro';
+import CalculatorSection from '../components/CalculatorSection.astro';
+import TestimonialsSection from '../components/TestimonialsSection.astro';
+import FAQSection from '../components/FAQSection.astro';
+import CTASection from '../components/CTASection.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+---
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOME_DA_MARCA - Chopp Delivery Premium | Chopeira Grátis</title>
+  <meta name="description" content="Chopp gelado de bar na sua casa com chopeira gratuita, entrega rápida e instalação profissional. Perfeito para festas, eventos e confraternizações.">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="NOME_DA_MARCA - Chopp Delivery Premium">
+  <meta property="og:description" content="Chopp de qualidade com chopeira grátis para seu evento">
+  <meta property="og:type" content="website">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <Header />
+  <main>
+    <HeroSection />
+    <BrandsStrip />
+    <HowItWorksSection />
+    <ChoppGridSection />
+    <ExperienceSection />
+    <CalculatorSection />
+    <TestimonialsSection />
+    <FAQSection />
+    <CTASection />
+  </main>
+  <Footer />
+</body>
+</html>

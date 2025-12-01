@@ -1,0 +1,55 @@
+<section class="brands-section">
+  <div class="container">
+    <h3 class="brands-title">Trabalhamos com as principais marcas de chopp</h3>
+    <div class="brands-grid">
+      <div class="brand-logo">Marca A</div>
+      <div class="brand-logo">Marca B</div>
+      <div class="brand-logo">Marca C</div>
+      <div class="brand-logo">Marca D</div>
+      <div class="brand-logo">Marca E</div>
+      <div class="brand-logo">Marca F</div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .brands-section {
+    padding: var(--spacing-xl) 0;
+    background: var(--color-bg-secondary);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .brands-title {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .brands-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-lg);
+    align-items: center;
+    justify-items: center;
+  }
+  
+  .brand-logo {
+    padding: var(--spacing-md);
+    color: var(--color-text-muted);
+    font-weight: 600;
+    font-size: 1.125rem;
+    opacity: 0.5;
+    transition: all var(--transition-fast);
+    filter: grayscale(100%);
+  }
+  
+  .brand-logo:hover {
+    opacity: 1;
+    color: var(--color-accent-gold);
+    filter: grayscale(0%);
+    transform: scale(1.1);
+  }
+</style>

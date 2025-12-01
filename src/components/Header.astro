@@ -1,0 +1,172 @@
+---
+import CartButton from './solid/CartButton';
+---
+
+<header class="header" id="header">
+  <div class="container header-container">
+    <a href="/" class="logo">
+      <span class="logo-text">NOME_DA_MARCA</span>
+    </a>
+    
+    <nav class="nav" id="nav">
+      <a href="/#como-funciona">Como funciona</a>
+      <a href="/#chopps">Chopps</a>
+      <a href="/#experiencia">Experiência</a>
+      <a href="/#calculadora">Calculadora</a>
+      <a href="/#depoimentos">Depoimentos</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/loja" class="nav-shop">Loja</a>
+    </nav>
+    
+    <div class="header-actions">
+      <CartButton client:load />
+      <a href="https://wa.me/5511999999999?text=Olá!%20Gostaria%20de%20fazer%20um%20pedido" 
+         class="btn btn-primary" target="_blank">
+        Pedir pelo WhatsApp
+      </a>
+      <button class="mobile-menu-toggle" id="mobile-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background var(--transition-smooth);
+  }
+  
+  .header.scrolled {
+    background: rgba(10, 10, 10, 0.95);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm) var(--spacing-md);
+    gap: var(--spacing-lg);
+  }
+  
+  .logo-text {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--color-accent-gold), var(--color-accent-amber));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .nav {
+    display: flex;
+    gap: var(--spacing-lg);
+    align-items: center;
+  }
+  
+  .nav a {
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    transition: color var(--transition-fast);
+    font-size: 0.95rem;
+  }
+  
+  .nav a:hover, .nav a.active {
+    color: var(--color-accent-gold);
+  }
+  
+  .nav-shop {
+    color: var(--color-accent-gold) !important;
+    font-weight: 600 !important;
+  }
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+  
+  .mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    padding: var(--spacing-xs);
+  }
+  
+  .mobile-menu-toggle span {
+    width: 24px;
+    height: 2px;
+    background: var(--color-accent-gold);
+    transition: all var(--transition-fast);
+  }
+  
+  @media (max-width: 1024px) {
+    .nav {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(10, 10, 10, 0.98);
+      flex-direction: column;
+      padding: var(--spacing-lg);
+      gap: var(--spacing-md);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .nav.active {
+      display: flex;
+    }
+    
+    .mobile-menu-toggle {
+      display: flex;
+    }
+    
+    .header-actions .btn {
+      display: none;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .logo-text {
+      font-size: 1.25rem;
+    }
+  }
+</style>
+
+<script>
+  const header = document.getElementById('header');
+  const mobileToggle = document.getElementById('mobile-toggle');
+  const nav = document.getElementById('nav');
+  
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 100) {
+      header?.classList.add('scrolled');
+    } else {
+      header?.classList.remove('scrolled');
+    }
+  });
+  
+  mobileToggle?.addEventListener('click', () => {
+    nav?.classList.toggle('active');
+  });
+  
+  // Close mobile menu on link click
+  nav?.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      nav?.classList.remove('active');
+    });
+  });
+</script>

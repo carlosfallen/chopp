@@ -1,0 +1,108 @@
+<section class="section testimonials-section" id="depoimentos">
+  <div class="container">
+    <h2 class="section-title">O que nossos clientes dizem</h2>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+        <p class="testimonial-text">
+          "Chopp gelado e saboroso, chopeira impecável e a equipe super atenciosa. Minha festa foi um sucesso!"
+        </p>
+        <div class="testimonial-author">
+          <strong>Mariana S.</strong>
+          <span>Aniversário de 30 anos</span>
+        </div>
+      </div>
+      
+      <div class="testimonial-card">
+        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+        <p class="testimonial-text">
+          "Processo super fácil, desde o pedido até a retirada. O chopp estava na temperatura perfeita!"
+        </p>
+        <div class="testimonial-author">
+          <strong>Roberto M.</strong>
+          <span>Confraternização empresa</span>
+        </div>
+      </div>
+      
+      <div class="testimonial-card">
+        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+        <p class="testimonial-text">
+          "Melhor decisão foi contratar! Todos os convidados elogiaram a qualidade do chopp. Super recomendo!"
+        </p>
+        <div class="testimonial-author">
+          <strong>Paula & João</strong>
+          <span>Casamento</span>
+        </div>
+      </div>
+      
+      <div class="testimonial-card">
+        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+        <p class="testimonial-text">
+          "Atendimento nota 10! Tiraram todas as minhas dúvidas e entregaram tudo certinho. Experiência incrível!"
+        </p>
+        <div class="testimonial-author">
+          <strong>Carlos A.</strong>
+          <span>Churrasco de família</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .testimonials-section {
+    background: var(--color-bg-secondary);
+  }
+  
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+  }
+  
+  .testimonial-card {
+    padding: var(--spacing-xl);
+    background: var(--color-bg-primary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius-lg);
+    transition: all var(--transition-smooth);
+  }
+  
+  .testimonial-card:hover {
+    border-color: rgba(212, 175, 55, 0.3);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .testimonial-rating {
+    font-size: 1.25rem;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .testimonial-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-md);
+    font-style: italic;
+  }
+  
+  .testimonial-author {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: var(--spacing-md);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .testimonial-author strong {
+    color: var(--color-text-primary);
+    font-size: 1rem;
+  }
+  
+  .testimonial-author span {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+</style>

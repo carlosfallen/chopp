@@ -1,0 +1,19 @@
+---
+import ChoppCalculator from './solid/ChoppCalculator';
+---
+
+<section class="section calculator-section" id="calculadora">
+  <div class="container">
+    <h2 class="section-title">Calcule a quantidade ideal</h2>
+    <p class="section-subtitle">
+      Informe os dados do seu evento e descubra quanto chopp você precisa
+    </p>
+    <ChoppCalculator client:idle />
+  </div>
+</section>
+
+<style>
+  .calculator-section {
+    background: var(--color-bg-primary);
+  }
+</style>

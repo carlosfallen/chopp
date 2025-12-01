@@ -1,0 +1,96 @@
+<section class="section cta-section">
+  <div class="container">
+    <div class="cta-content">
+      <h2>Pronto para brindar com um chopp perfeito?</h2>
+      <p>Faça seu pedido agora e garanta a melhor experiência para seu evento</p>
+      <div class="cta-actions">
+        <a href="https://wa.me/5511999999999?text=Olá!%20Gostaria%20de%20fazer%20um%20pedido" 
+           class="btn btn-primary btn-lg" target="_blank">
+          Pedir pelo WhatsApp
+        </a>
+        <a href="/loja" class="btn btn-secondary btn-lg">
+          Ver produtos na loja
+        </a>
+      </div>
+      <div class="cta-info">
+        <div class="info-item">
+          <strong>WhatsApp:</strong>
+          <span>(11) 99999-9999</span>
+        </div>
+        <div class="info-item">
+          <strong>E-mail:</strong>
+          <span>contato@nomedamarca.com.br</span>
+        </div>
+        <div class="info-item">
+          <strong>Atendimento:</strong>
+          <span>Seg-Sex: 9h às 18h | Sáb: 9h às 14h</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-section {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 191, 0, 0.05));
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  }
+  
+  .cta-content {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  .cta-content h2 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .cta-content p {
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-xl);
+  }
+  
+  .cta-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: var(--spacing-2xl);
+  }
+  
+  .cta-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg);
+    background: rgba(10, 10, 10, 0.4);
+    border-radius: var(--border-radius-lg);
+  }
+  
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.95rem;
+  }
+  
+  .info-item strong {
+    color: var(--color-accent-gold);
+    font-weight: 600;
+  }
+  
+  .info-item span {
+    color: var(--color-text-secondary);
+  }
+  
+  @media (max-width: 768px) {
+    .cta-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+</style>

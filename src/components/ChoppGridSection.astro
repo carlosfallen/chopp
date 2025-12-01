@@ -1,0 +1,23 @@
+---
+import AnimatedChoppGrid from './solid/AnimatedChoppGrid';
+---
+
+<section class="section" id="chopps">
+  <div class="container">
+    <h2 class="section-title">Escolha o chopp perfeito</h2>
+    <p class="section-subtitle">
+      Temos opções para todos os gostos, do clássico ao especial
+    </p>
+    <AnimatedChoppGrid client:idle />
+    <div class="section-cta">
+      <a href="/loja" class="btn btn-primary btn-lg">Ver todos os produtos na loja</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .section-cta {
+    text-align: center;
+    margin-top: var(--spacing-xl);
+  }
+</style>
