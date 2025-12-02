@@ -1,5 +1,6 @@
 import { onMount } from 'solid-js';
 import gsap from 'gsap';
+import anime from 'animejs';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import './AnimatedSteps.css';
 
@@ -9,7 +10,7 @@ if (typeof window !== 'undefined') {
 
 export default function AnimatedSteps() {
   let containerRef: HTMLDivElement | undefined;
-  
+
   const steps = [
     {
       icon: '📍',
@@ -32,23 +33,70 @@ export default function AnimatedSteps() {
       description: 'Aproveite chopp gelado de bar na sua casa'
     }
   ];
-  
+
   onMount(() => {
     if (!containerRef) return;
-    
-    gsap.from(containerRef.children, {
-      scrollTrigger: {
-        trigger: containerRef,
-        start: 'top 80%'
-      },
-      y: 60,
-      opacity: 0,
-      duration: 0.6,
-      stagger: 0.15,
-      ease: 'power3.out'
+
+    // Animação inicial com GSAP ScrollTrigger
+    ScrollTrigger.create({
+      trigger: containerRef,
+      start: 'top 80%',
+      onEnter: () => {
+        // Animação dos cards com anime.js
+        anime({
+          targets: containerRef!.children,
+          translateY: [80, 0],
+          opacity: [0, 1],
+          delay: anime.stagger(150),
+          duration: 800,
+          easing: 'easeOutCubic'
+        });
+
+        // Animação dos ícones
+        anime({
+          targets: '.step-icon',
+          scale: [0, 1],
+          rotate: [45, 0],
+          delay: anime.stagger(150, { start: 400 }),
+          duration: 600,
+          easing: 'easeOutBack'
+        });
+
+        // Animação dos números
+        anime({
+          targets: '.step-number',
+          scale: [0, 1],
+          opacity: [0, 1],
+          delay: anime.stagger(150, { start: 200 }),
+          duration: 500,
+          easing: 'easeOutElastic(1, .6)'
+        });
+      }
+    });
+
+    // Hover animation com anime.js
+    const cards = containerRef.children;
+    Array.from(cards).forEach((card: any) => {
+      card.addEventListener('mouseenter', () => {
+        anime({
+          targets: card,
+          scale: 1.05,
+          duration: 300,
+          easing: 'easeOutQuad'
+        });
+      });
+
+      card.addEventListener('mouseleave', () => {
+        anime({
+          targets: card,
+          scale: 1,
+          duration: 300,
+          easing: 'easeOutQuad'
+        });
+      });
     });
   });
-  
+
   return (
     <div class="steps-grid" ref={containerRef}>
       {steps.map((step, index) => (

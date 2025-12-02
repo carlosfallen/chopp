@@ -244,7 +244,68 @@ function ProductModal(props: {
       active: true
     }
   );
-  
+
+  const [uploading, setUploading] = createSignal(false);
+  const [availableImages, setAvailableImages] = createSignal<Array<{key: string, url: string}>>([]);
+
+  onMount(async () => {
+    // Carregar imagens disponíveis
+    try {
+      const response = await fetch('/api/images');
+      if (response.ok) {
+        const data = await response.json();
+        setAvailableImages(data.images || []);
+      }
+    } catch (error) {
+      console.error('Error loading images:', error);
+    }
+  });
+
+  const handleImageUpload = async (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) return;
+
+    // Validar tipo
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor, selecione uma imagem válida');
+      return;
+    }
+
+    // Validar tamanho (máx 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Imagem muito grande. Máximo 5MB');
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) throw new Error('Upload failed');
+
+      const data = await response.json();
+
+      if (data.url) {
+        setFormData({ ...formData(), imageUrl: data.url });
+        alert('✅ Imagem enviada com sucesso!');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('❌ Erro ao fazer upload da imagem');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = (e: Event) => {
     e.preventDefault();
     props.onSave(formData());
@@ -332,14 +393,50 @@ function ProductModal(props: {
           </div>
           
           <div class="form-group">
-            <label>URL da Imagem</label>
-            <input 
-              type="url"
-              placeholder="Cole a URL da imagem"
-              value={formData().imageUrl || ''}
-              onInput={(e) => setFormData({ ...formData(), imageUrl: e.currentTarget.value })}
-            />
-            <small>Vá em Admin → Imagens para fazer upload</small>
+            <label>Imagem do Produto</label>
+
+            {/* Upload de nova imagem */}
+            <div class="image-upload-section">
+              <label class="upload-btn" classList={{ uploading: uploading() }}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading()}
+                  style="display: none;"
+                />
+                <span>{uploading() ? '⏳ Enviando...' : '📤 Fazer Upload'}</span>
+              </label>
+
+              {/* Ou selecionar imagem existente */}
+              <select
+                onChange={(e) => setFormData({ ...formData(), imageUrl: e.currentTarget.value })}
+                disabled={uploading()}
+              >
+                <option value="">Ou selecione uma imagem existente</option>
+                {availableImages().map(img => (
+                  <option value={img.url} selected={formData().imageUrl === img.url}>
+                    {img.key}
+                  </option>
+                ))}
+              </select>
+
+              {/* Ou colar URL */}
+              <input
+                type="url"
+                placeholder="Ou cole URL diretamente"
+                value={formData().imageUrl || ''}
+                onInput={(e) => setFormData({ ...formData(), imageUrl: e.currentTarget.value })}
+                disabled={uploading()}
+              />
+            </div>
+
+            {/* Preview da imagem */}
+            <Show when={formData().imageUrl}>
+              <div class="image-preview-product">
+                <img src={formData().imageUrl} alt="Preview" />
+              </div>
+            </Show>
           </div>
           
           <div class="form-group">

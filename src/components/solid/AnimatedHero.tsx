@@ -1,42 +1,72 @@
-// FILE: src/components/solid/AnimatedHeroNew.tsx
-import { onMount } from 'solid-js';
+// FILE: src/components/solid/AnimatedHero.tsx
+import { createSignal, onMount } from 'solid-js';
 import gsap from 'gsap';
-import './AnimatedHeroNew.css';
+import anime from 'animejs';
+import './AnimatedHero.css';
 
-export default function AnimatedHeroNew() {
+interface LayoutConfig {
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroImage?: string;
+  backgroundColor?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  showStats?: boolean;
+  showBadge?: boolean;
+}
+
+export default function AnimatedHero() {
+  const [config, setConfig] = createSignal<LayoutConfig>({
+    heroTitle: 'Chopp de Bar\nNa Sua Casa\nSem Complicação',
+    heroSubtitle: 'Chopeira profissional gratuita, entrega express e instalação completa. Transforme qualquer momento em celebração.',
+    heroImage: 'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=1200&q=80',
+    backgroundColor: '#0a0a0a',
+    primaryColor: '#d4af37',
+    secondaryColor: '#ffbf00',
+    showStats: true,
+    showBadge: true
+  });
+
+  let containerRef: HTMLDivElement | undefined;
   let leftPaneRef: HTMLDivElement | undefined;
   let rightPaneRef: HTMLDivElement | undefined;
   let titleRef: HTMLHeadingElement | undefined;
   let subtitleRef: HTMLParagraphElement | undefined;
   let ctaRef: HTMLDivElement | undefined;
   let imageRef: HTMLImageElement | undefined;
-  
-  // Buscar imagem do hero das configurações
-  const [heroImage, setHeroImage] = window.createSignal?.('https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&q=80') || 
-    (() => ['https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&q=80']);
-  
+
   onMount(async () => {
-    // Buscar configurações
+    // Carregar configurações do admin
     try {
-      const response = await fetch('/api/settings');
-      if (response.ok) {
-        const settings = await response.json();
-        if (settings.heroImage && setHeroImage) {
-          setHeroImage(settings.heroImage);
+      const [settingsRes, layoutRes] = await Promise.all([
+        fetch('/api/settings'),
+        fetch('/api/layout-config')
+      ]);
+
+      if (settingsRes.ok) {
+        const settings = await settingsRes.json();
+        if (settings.heroImage) {
+          setConfig(c => ({ ...c, heroImage: settings.heroImage }));
         }
       }
+
+      if (layoutRes.ok) {
+        const layout = await layoutRes.json();
+        setConfig(c => ({ ...c, ...layout }));
+      }
     } catch (error) {
-      console.error('Error loading settings:', error);
+      console.error('Error loading config:', error);
     }
-    
+
+    // Animação inicial com GSAP
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-    
+
     tl.from(leftPaneRef, {
       x: -100,
       opacity: 0,
       duration: 1
     })
-    .from(titleRef?.children || [], {
+    .from(titleRef?.querySelectorAll('.title-line') || [], {
       y: 80,
       opacity: 0,
       duration: 0.8,
@@ -53,22 +83,45 @@ export default function AnimatedHeroNew() {
       opacity: 0,
       duration: 0.6,
       stagger: 0.15
-    }, '-=0.3')
-    .from(rightPaneRef, {
-      x: 100,
-      opacity: 0,
-      duration: 1
-    }, '-=1')
-    .from(imageRef, {
-      scale: 1.2,
-      opacity: 0,
-      duration: 1.2
-    }, '-=0.8');
-    
+    }, '-=0.3');
+
+    // Animação da imagem com anime.js
+    anime({
+      targets: rightPaneRef,
+      translateX: [100, 0],
+      opacity: [0, 1],
+      duration: 1000,
+      easing: 'easeOutExpo',
+      delay: 400
+    });
+
+    anime({
+      targets: imageRef,
+      scale: [1.2, 1],
+      opacity: [0, 1],
+      duration: 1500,
+      easing: 'easeOutCubic',
+      delay: 600
+    });
+
+    // Animação dos floating cards
+    const cards = rightPaneRef?.querySelectorAll('.floating-card');
+    if (cards) {
+      anime({
+        targets: cards,
+        translateY: [-50, 0],
+        opacity: [0, 1],
+        duration: 800,
+        delay: anime.stagger(200, { start: 1200 }),
+        easing: 'spring(1, 80, 10, 0)'
+      });
+    }
+
+    // Parallax com mouse
     const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 40;
-      const y = (e.clientY / window.innerHeight - 0.5) * 40;
-      
+      const x = (e.clientX / window.innerWidth - 0.5) * 30;
+      const y = (e.clientY / window.innerHeight - 0.5) * 30;
+
       if (imageRef) {
         gsap.to(imageRef, {
           x: x,
@@ -77,33 +130,64 @@ export default function AnimatedHeroNew() {
           ease: 'power2.out'
         });
       }
+
+      // Parallax nos cards
+      if (cards) {
+        cards.forEach((card, index) => {
+          const factor = (index + 1) * 0.5;
+          gsap.to(card, {
+            x: x * factor,
+            y: y * factor,
+            duration: 1.5,
+            ease: 'power2.out'
+          });
+        });
+      }
     };
-    
+
     window.addEventListener('mousemove', handleMouseMove);
-    
+
+    // Floating animation contínua nos cards
+    if (cards) {
+      cards.forEach((card, index) => {
+        anime({
+          targets: card,
+          translateY: [0, -10, 0],
+          duration: 3000 + (index * 500),
+          easing: 'easeInOutSine',
+          loop: true
+        });
+      });
+    }
+
     return () => window.removeEventListener('mousemove', handleMouseMove);
   });
-  
+
+  const titleLines = () => config().heroTitle?.split('\n') || [];
+
   return (
-    <>
+    <div class="hero-container" ref={containerRef}>
       <div class="hero-left-pane" ref={leftPaneRef}>
         <div class="hero-content-wrapper">
-          <div class="hero-badge">
-            <span class="badge-icon">🏆</span>
-            <span>Melhor Chopp Delivery 2024</span>
-          </div>
-          
-          <h1 ref={titleRef}>
-            <span class="title-line">Chopp de Bar</span>
-            <span class="title-line highlight">Na Sua Casa</span>
-            <span class="title-line">Sem Complicação</span>
+          {config().showBadge && (
+            <div class="hero-badge">
+              <span class="badge-icon">🏆</span>
+              <span>Melhor Chopp Delivery 2024</span>
+            </div>
+          )}
+
+          <h1 ref={titleRef} class="hero-title">
+            {titleLines().map((line, index) => (
+              <span class="title-line" classList={{ highlight: index === 1 }}>
+                {line}
+              </span>
+            ))}
           </h1>
-          
+
           <p class="hero-subtitle" ref={subtitleRef}>
-            Chopeira profissional gratuita, entrega express e instalação completa.
-            <strong> Transforme qualquer momento em celebração.</strong>
+            {config().heroSubtitle}
           </p>
-          
+
           <div class="hero-cta-group" ref={ctaRef}>
             <a href="/#calculadora" class="btn btn-primary btn-hero">
               <span>Calcular Quantidade</span>
@@ -116,36 +200,38 @@ export default function AnimatedHeroNew() {
               <span>Ver Produtos</span>
             </a>
           </div>
-          
-          <div class="hero-stats">
-            <div class="stat-item">
-              <strong>5.000+</strong>
-              <span>Eventos Realizados</span>
+
+          {config().showStats && (
+            <div class="hero-stats">
+              <div class="stat-item">
+                <strong>5.000+</strong>
+                <span>Eventos Realizados</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat-item">
+                <strong>4.9/5</strong>
+                <span>Avaliação Média</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat-item">
+                <strong>24h</strong>
+                <span>Entrega Express</span>
+              </div>
             </div>
-            <div class="stat-divider"></div>
-            <div class="stat-item">
-              <strong>4.9/5</strong>
-              <span>Avaliação Média</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="stat-item">
-              <strong>24h</strong>
-              <span>Entrega Express</span>
-            </div>
-          </div>
+          )}
         </div>
       </div>
-      
+
       <div class="hero-right-pane" ref={rightPaneRef}>
         <div class="hero-image-wrapper">
           <div class="image-glow"></div>
-          <img 
+          <img
             ref={imageRef}
-            src={heroImage?.[0] || heroImage || 'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&q=80'}
+            src={config().heroImage}
             alt="Chopeira profissional servindo chopp gelado"
             class="hero-image"
           />
-          
+
           <div class="floating-card card-1">
             <div class="card-icon">🍺</div>
             <div class="card-text">
@@ -153,7 +239,7 @@ export default function AnimatedHeroNew() {
               <span>Pilsen, IPA, Weiss...</span>
             </div>
           </div>
-          
+
           <div class="floating-card card-2">
             <div class="card-icon">❄️</div>
             <div class="card-text">
@@ -161,7 +247,7 @@ export default function AnimatedHeroNew() {
               <span>Temperatura ideal</span>
             </div>
           </div>
-          
+
           <div class="floating-card card-3">
             <div class="card-icon">✓</div>
             <div class="card-text">
@@ -171,6 +257,6 @@ export default function AnimatedHeroNew() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
