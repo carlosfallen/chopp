@@ -1,6 +1,6 @@
 import { onMount } from 'solid-js';
 import gsap from 'gsap';
-import anime from 'animejs';
+import * as anime from 'animejs';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import './AnimatedSteps.css';
 
