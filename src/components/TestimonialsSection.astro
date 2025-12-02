@@ -1,50 +1,24 @@
+---
+// FILE: src/components/TestimonialsSection.astro (atualizado)
+import { getTestimonials } from '../lib/content';
+
+const testimonials = await getTestimonials(Astro);
+---
+
 <section class="section testimonials-section" id="depoimentos">
   <div class="container">
     <h2 class="section-title">O que nossos clientes dizem</h2>
     <div class="testimonials-grid">
-      <div class="testimonial-card">
-        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-        <p class="testimonial-text">
-          "Chopp gelado e saboroso, chopeira impecável e a equipe super atenciosa. Minha festa foi um sucesso!"
-        </p>
-        <div class="testimonial-author">
-          <strong>Mariana S.</strong>
-          <span>Aniversário de 30 anos</span>
+      {testimonials.map(testimonial => (
+        <div class="testimonial-card">
+          <div class="testimonial-rating">{'⭐'.repeat(testimonial.rating)}</div>
+          <p class="testimonial-text">"{testimonial.text}"</p>
+          <div class="testimonial-author">
+            <strong>{testimonial.name}</strong>
+            <span>{testimonial.event}</span>
+          </div>
         </div>
-      </div>
-      
-      <div class="testimonial-card">
-        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-        <p class="testimonial-text">
-          "Processo super fácil, desde o pedido até a retirada. O chopp estava na temperatura perfeita!"
-        </p>
-        <div class="testimonial-author">
-          <strong>Roberto M.</strong>
-          <span>Confraternização empresa</span>
-        </div>
-      </div>
-      
-      <div class="testimonial-card">
-        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-        <p class="testimonial-text">
-          "Melhor decisão foi contratar! Todos os convidados elogiaram a qualidade do chopp. Super recomendo!"
-        </p>
-        <div class="testimonial-author">
-          <strong>Paula & João</strong>
-          <span>Casamento</span>
-        </div>
-      </div>
-      
-      <div class="testimonial-card">
-        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-        <p class="testimonial-text">
-          "Atendimento nota 10! Tiraram todas as minhas dúvidas e entregaram tudo certinho. Experiência incrível!"
-        </p>
-        <div class="testimonial-author">
-          <strong>Carlos A.</strong>
-          <span>Churrasco de família</span>
-        </div>
-      </div>
+      ))}
     </div>
   </div>
 </section>

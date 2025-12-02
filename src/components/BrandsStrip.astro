@@ -1,13 +1,23 @@
+---
+// FILE: src/components/BrandsStrip.astro (atualizado)
+import { getBrands } from '../lib/content';
+
+const brands = await getBrands(Astro);
+---
+
 <section class="brands-section">
   <div class="container">
     <h3 class="brands-title">Trabalhamos com as principais marcas de chopp</h3>
     <div class="brands-grid">
-      <div class="brand-logo">Marca A</div>
-      <div class="brand-logo">Marca B</div>
-      <div class="brand-logo">Marca C</div>
-      <div class="brand-logo">Marca D</div>
-      <div class="brand-logo">Marca E</div>
-      <div class="brand-logo">Marca F</div>
+      {brands.map(brand => (
+        <div class="brand-logo">
+          {brand.logoUrl ? (
+            <img src={brand.logoUrl} alt={brand.name} />
+          ) : (
+            <span>{brand.name}</span>
+          )}
+        </div>
+      ))}
     </div>
   </div>
 </section>
@@ -44,6 +54,16 @@
     opacity: 0.5;
     transition: all var(--transition-fast);
     filter: grayscale(100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+  }
+  
+  .brand-logo img {
+    max-width: 120px;
+    max-height: 60px;
+    object-fit: contain;
   }
   
   .brand-logo:hover {

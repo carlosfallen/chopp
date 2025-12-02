@@ -1,0 +1,453 @@
+---
+// FILE: src/pages/admin/orders.astro (atualizado com funcionalidade)
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Gerenciar Pedidos">
+  <div class="admin-content">
+    <div class="content-header">
+      <div>
+        <h1>Pedidos</h1>
+        <p>Acompanhe e gerencie os pedidos recebidos</p>
+      </div>
+      <div class="filter-buttons">
+        <button class="btn btn-secondary btn-sm filter-status" data-status="all">Todos</button>
+        <button class="btn btn-secondary btn-sm filter-status" data-status="pending">Pendentes</button>
+        <button class="btn btn-secondary btn-sm filter-status" data-status="confirmed">Confirmados</button>
+        <button class="btn btn-secondary btn-sm filter-status" data-status="delivered">Entregues</button>
+      </div>
+    </div>
+    
+    <div class="orders-table">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Data</th>
+            <th>Produtos</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="orders-tbody">
+          <!-- Orders will be loaded here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Modal de Detalhes -->
+  <div class="modal-overlay" id="order-modal" style="display: none;">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h2>Detalhes do Pedido <span id="order-id-display"></span></h2>
+        <button class="modal-close" id="close-modal">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="order-section">
+          <h3>Informações do Cliente</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <strong>Nome:</strong>
+              <span id="customer-name"></span>
+            </div>
+            <div class="info-item">
+              <strong>Telefone:</strong>
+              <span id="customer-phone"></span>
+            </div>
+            <div class="info-item">
+              <strong>E-mail:</strong>
+              <span id="customer-email"></span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="order-section">
+          <h3>Produtos</h3>
+          <div id="order-items"></div>
+        </div>
+        
+        <div class="order-section">
+          <h3>Status do Pedido</h3>
+          <select id="order-status" class="status-select">
+            <option value="pending">Pendente</option>
+            <option value="confirmed">Confirmado</option>
+            <option value="delivered">Entregue</option>
+            <option value="cancelled">Cancelado</option>
+          </select>
+        </div>
+        
+        <div class="order-total">
+          <strong>Total do Pedido:</strong>
+          <span id="order-total"></span>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="cancel-btn">Fechar</button>
+          <button class="btn btn-primary" id="save-order-btn">Salvar Alterações</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .admin-content {
+    padding: var(--spacing-2xl);
+  }
+  
+  .content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-2xl);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+  }
+  
+  .filter-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+  }
+  
+  .filter-status.active {
+    background: var(--color-accent-gold);
+    color: var(--color-bg-primary);
+  }
+  
+  .orders-table {
+    background: var(--color-bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius-lg);
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: var(--spacing-md);
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  th {
+    font-weight: 600;
+    color: var(--color-accent-gold);
+    background: rgba(255, 255, 255, 0.02);
+  }
+  
+  td {
+    color: var(--color-text-secondary);
+  }
+  
+  .status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  
+  .status-badge.pending {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+  }
+  
+  .status-badge.confirmed {
+    background: rgba(0, 123, 255, 0.2);
+    color: #007bff;
+  }
+  
+  .status-badge.delivered {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+  }
+  
+  .status-badge.cancelled {
+    background: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+  }
+  
+  .btn-icon {
+    padding: var(--spacing-xs);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius);
+    margin: 0 4px;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .btn-icon:hover {
+    background: rgba(212, 175, 55, 0.2);
+  }
+  
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: var(--spacing-md);
+  }
+  
+  .modal-large {
+    max-width: 800px;
+  }
+  
+  .modal-content {
+    background: var(--color-bg-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-lg);
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xl);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .modal-close {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5rem;
+  }
+  
+  .modal-body {
+    padding: var(--spacing-xl);
+  }
+  
+  .order-section {
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-xl);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .order-section h3 {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+  }
+  
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .info-item strong {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+  
+  .status-select {
+    width: 100%;
+    padding: var(--spacing-sm);
+    background: var(--color-bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    color: var(--color-text-primary);
+    font-size: 1rem;
+  }
+  
+  .order-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: var(--border-radius);
+    font-size: 1.25rem;
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .order-total span {
+    color: var(--color-accent-gold);
+    font-weight: 700;
+  }
+  
+  .modal-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+  }
+  
+  .modal-actions button {
+    flex: 1;
+  }
+  
+  .order-item {
+    padding: var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--border-radius);
+    margin-bottom: var(--spacing-xs);
+  }
+</style>
+
+<script>
+  let orders: any[] = [];
+  let currentFilter = 'all';
+  let currentOrderId: string | null = null;
+  
+  async function loadOrders() {
+    try {
+      const response = await fetch('/api/orders');
+      const data = await response.json();
+      orders = data.orders || [];
+      renderOrders();
+    } catch (error) {
+      console.error('Error loading orders:', error);
+    }
+  }
+  
+  function renderOrders() {
+    const tbody = document.getElementById('orders-tbody');
+    if (!tbody) return;
+    
+    const filtered = currentFilter === 'all' 
+      ? orders 
+      : orders.filter(o => o.status === currentFilter);
+    
+    tbody.innerHTML = filtered.map(order => {
+      const itemsSummary = order.items.map((item: any) => 
+        `${item.quantity}x ${item.productName} ${item.liters}L`
+      ).join(', ');
+      
+      const date = new Date(order.createdAt).toLocaleDateString('pt-BR');
+      
+      return `
+        <tr>
+          <td>#${order.id}</td>
+          <td>${order.customerName}</td>
+          <td>${date}</td>
+          <td>${itemsSummary}</td>
+          <td>R$ ${order.total.toFixed(2)}</td>
+          <td><span class="status-badge ${order.status}">${getStatusLabel(order.status)}</span></td>
+          <td>
+            <button class="btn-icon" data-view="${order.id}">👁️</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+    
+    // Add event listeners
+    document.querySelectorAll('[data-view]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.target as HTMLElement).getAttribute('data-view');
+        if (id) viewOrder(id);
+      });
+    });
+  }
+  
+  function getStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      pending: 'Pendente',
+      confirmed: 'Confirmado',
+      delivered: 'Entregue',
+      cancelled: 'Cancelado'
+    };
+    return labels[status] || status;
+  }
+  
+  function viewOrder(id: string) {
+    const order = orders.find(o => o.id === id);
+    if (!order) return;
+    
+    currentOrderId = id;
+    
+    const modal = document.getElementById('order-modal');
+    if (modal) modal.style.display = 'flex';
+    
+    (document.getElementById('order-id-display') as HTMLElement).textContent = `#${order.id}`;
+    (document.getElementById('customer-name') as HTMLElement).textContent = order.customerName;
+    (document.getElementById('customer-phone') as HTMLElement).textContent = order.customerPhone;
+    (document.getElementById('customer-email') as HTMLElement).textContent = order.customerEmail;
+    (document.getElementById('order-status') as HTMLSelectElement).value = order.status;
+    (document.getElementById('order-total') as HTMLElement).textContent = `R$ ${order.total.toFixed(2)}`;
+    
+    const itemsContainer = document.getElementById('order-items');
+    if (itemsContainer) {
+      itemsContainer.innerHTML = order.items.map((item: any) => `
+        <div class="order-item">
+          ${item.quantity}x ${item.productName} (${item.liters}L) - R$ ${item.price.toFixed(2)}
+        </div>
+      `).join('');
+    }
+  }
+  
+  function closeModal() {
+    const modal = document.getElementById('order-modal');
+    if (modal) modal.style.display = 'none';
+    currentOrderId = null;
+  }
+  
+  // Filter buttons
+  document.querySelectorAll('.filter-status').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const status = (e.target as HTMLElement).getAttribute('data-status');
+      if (status) {
+        currentFilter = status;
+        document.querySelectorAll('.filter-status').forEach(b => b.classList.remove('active'));
+        (e.target as HTMLElement).classList.add('active');
+        renderOrders();
+      }
+    });
+  });
+  
+  // Set initial filter active
+  document.querySelector('[data-status="all"]')?.classList.add('active');
+  
+  document.getElementById('close-modal')?.addEventListener('click', closeModal);
+  document.getElementById('cancel-btn')?.addEventListener('click', closeModal);
+  
+  document.getElementById('save-order-btn')?.addEventListener('click', async () => {
+    if (!currentOrderId) return;
+    
+    const order = orders.find(o => o.id === currentOrderId);
+    if (!order) return;
+    
+    const newStatus = (document.getElementById('order-status') as HTMLSelectElement).value;
+    
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...order, status: newStatus })
+      });
+      
+      if (response.ok) {
+        alert('Pedido atualizado com sucesso!');
+        closeModal();
+        loadOrders();
+      }
+    } catch (error) {
+      console.error('Error updating order:', error);
+      alert('Erro ao atualizar pedido');
+    }
+  });
+  
+  loadOrders();
+</script>

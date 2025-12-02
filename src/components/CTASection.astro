@@ -1,10 +1,18 @@
+---
+// FILE: src/components/CTASection.astro (atualizado)
+import { getSettings } from '../lib/content';
+
+const settings = await getSettings(Astro);
+const whatsappNumber = settings.whatsapp.replace(/\D/g, '');
+---
+
 <section class="section cta-section">
   <div class="container">
     <div class="cta-content">
       <h2>Pronto para brindar com um chopp perfeito?</h2>
       <p>Faça seu pedido agora e garanta a melhor experiência para seu evento</p>
       <div class="cta-actions">
-        <a href="https://wa.me/5511999999999?text=Olá!%20Gostaria%20de%20fazer%20um%20pedido" 
+        <a href={`https://wa.me/${whatsappNumber}?text=Olá!%20Gostaria%20de%20fazer%20um%20pedido`} 
            class="btn btn-primary btn-lg" target="_blank">
           Pedir pelo WhatsApp
         </a>
@@ -15,15 +23,15 @@
       <div class="cta-info">
         <div class="info-item">
           <strong>WhatsApp:</strong>
-          <span>(11) 99999-9999</span>
+          <span>{settings.whatsapp}</span>
         </div>
         <div class="info-item">
           <strong>E-mail:</strong>
-          <span>contato@nomedamarca.com.br</span>
+          <span>{settings.email}</span>
         </div>
         <div class="info-item">
           <strong>Atendimento:</strong>
-          <span>Seg-Sex: 9h às 18h | Sáb: 9h às 14h</span>
+          <span>{settings.workingHours}</span>
         </div>
       </div>
     </div>

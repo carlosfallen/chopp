@@ -1,0 +1,49 @@
+# FILE: docker-compose.yml
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chopp-delivery
+    ports:
+      - "4321:4321"
+      - "8787:8787"
+    volumes:
+      - ./.wrangler:/app/.wrangler
+      - ./uploads:/app/uploads
+      - ./src:/app/src
+      - ./public:/app/public
+    environment:
+      - NODE_ENV=development
+      - HOST=0.0.0.0
+      - PORT=4321
+    command: npm run dev -- --host 0.0.0.0
+    restart: unless-stopped
+    networks:
+      - chopp-network
+
+  # Nginx como proxy reverso (opcional)
+  nginx:
+    image: nginx:alpine
+    container_name: chopp-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - app
+    networks:
+      - chopp-network
+    restart: unless-stopped
+
+networks:
+  chopp-network:
+    driver: bridge
+
+volumes:
+  wrangler-data:
+  uploads-data:

@@ -1,3 +1,4 @@
+// FILE: src/components/solid/AnimatedHero.tsx (corrigido)
 import { onMount } from 'solid-js';
 import gsap from 'gsap';
 import './AnimatedHero.css';
@@ -10,7 +11,15 @@ export default function AnimatedHero() {
   let badgesRef: HTMLDivElement | undefined;
   
   onMount(() => {
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    const tl = gsap.timeline({ 
+      defaults: { ease: 'power3.out' },
+      onComplete: () => {
+        // Garante que os elementos fiquem visíveis após a animação
+        gsap.set([titleRef, subtitleRef, ctaRef?.children, badgesRef?.children], {
+          clearProps: 'all'
+        });
+      }
+    });
     
     tl.from(titleRef, {
       y: 60,
@@ -26,13 +35,15 @@ export default function AnimatedHero() {
       y: 30,
       opacity: 0,
       duration: 0.6,
-      stagger: 0.15
+      stagger: 0.15,
+      clearProps: 'all'
     }, '-=0.4')
     .from(badgesRef?.children || [], {
       y: 20,
       opacity: 0,
       duration: 0.5,
-      stagger: 0.1
+      stagger: 0.1,
+      clearProps: 'all'
     }, '-=0.3');
   });
   

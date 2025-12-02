@@ -1,9 +1,8 @@
 ---
+// FILE: src/pages/loja.astro (atualizado)
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import ShopHeader from '../components/shop/ShopHeader';
-import ProductGrid from '../components/shop/ProductGrid';
-import Cart from '../components/shop/Cart';
+import ShopContent from '../components/solid/ShopContent';
 import '../styles/global.css';
 ---
 
@@ -22,9 +21,20 @@ import '../styles/global.css';
 <body>
   <Header />
   <main class="shop-main">
-    <ShopHeader client:load />
-    <ProductGrid client:load />
-    <Cart client:load />
+    <div class="shop-header">
+      <div class="container">
+        <div class="shop-header-content">
+          <div class="shop-header-text">
+            <h1>Nossa Loja de Chopps</h1>
+            <p>Escolha seu estilo preferido, selecione a quantidade e finalize seu pedido</p>
+          </div>
+          <a href="/#calculadora" class="btn btn-secondary">
+            Calcular quantidade ideal
+          </a>
+        </div>
+      </div>
+    </div>
+    <ShopContent client:load />
   </main>
   <Footer />
 </body>
@@ -34,5 +44,35 @@ import '../styles/global.css';
   .shop-main {
     min-height: 100vh;
     padding-top: 80px;
+  }
+  
+  .shop-header {
+    padding: var(--spacing-2xl) 0;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 191, 0, 0.05));
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .shop-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xl);
+  }
+  
+  .shop-header-text h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .shop-header-text p {
+    font-size: 1.125rem;
+    color: var(--color-text-muted);
+  }
+  
+  @media (max-width: 768px) {
+    .shop-header-content {
+      flex-direction: column;
+      text-align: center;
+    }
   }
 </style>

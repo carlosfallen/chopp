@@ -1,3 +1,4 @@
+/* FILE: src/components/solid/AnimatedHero.css (atualizado) */
 .hero-content {
   position: relative;
   z-index: 2;
@@ -32,6 +33,17 @@
   justify-content: center;
   flex-wrap: wrap;
   margin-bottom: var(--spacing-xl);
+  /* Remove qualquer transform ou opacity inline */
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+.hero-cta a {
+  /* Garante visibilidade dos botões */
+  opacity: 1 !important;
+  transform: none !important;
+  position: relative;
+  z-index: 10;
 }
 
 .btn-lg {
