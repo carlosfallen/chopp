@@ -2,15 +2,16 @@
 /// <reference types="astro/client" />
 
 type D1Database = import('@cloudflare/workers-types').D1Database;
-
-type Runtime = import('@astrojs/cloudflare').Runtime<Env>;
+type R2Bucket = import('@cloudflare/workers-types').R2Bucket;
 
 declare namespace App {
-  interface Locals extends Runtime {
-    db: D1Database;
+  interface Locals {
+    runtime: {
+      env: {
+        DB: D1Database;
+        BUCKET: R2Bucket;
+      };
+    };
+    db: import('./lib/db').Database;
   }
-}
-
-interface Env {
-  DB: D1Database;
 }

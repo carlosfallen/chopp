@@ -1,5 +1,5 @@
 ---
-// FILE: src/pages/admin/settings.astro (atualizado com client storage)
+// FILE: src/pages/admin/settings.astro (sem localStorage)
 import AdminLayout from '../../layouts/AdminLayout.astro';
 ---
 
@@ -102,70 +102,60 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 </style>
 
 <script>
-  const STORAGE_KEY = 'admin_settings';
-  
-  function getSettings() {
+  async function loadSettings() {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        return JSON.parse(stored);
+      const response = await fetch('/api/settings');
+      if (!response.ok) {
+        throw new Error('Failed to load settings');
+      }
+      
+      const settings = await response.json();
+      const form = document.getElementById('settings-form') as HTMLFormElement;
+      
+      if (form) {
+        Object.keys(settings).forEach(key => {
+          const input = form.elements.namedItem(key) as HTMLInputElement;
+          if (input && settings[key]) {
+            input.value = settings[key];
+          }
+        });
       }
     } catch (error) {
       console.error('Error loading settings:', error);
-    }
-    
-    return {
-      brandName: 'NOME_DA_MARCA',
-      whatsapp: '(11) 99999-9999',
-      email: 'contato@nomedamarca.com.br',
-      workingHours: 'Seg-Sex: 9h às 18h | Sáb: 9h às 14h',
-      instagram: '@nomedamarca',
-      facebook: 'facebook.com/nomedamarca'
-    };
-  }
-  
-  function saveSettings(settings: any) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-      return true;
-    } catch (error) {
-      console.error('Error saving settings:', error);
-      return false;
+      alert('Erro ao carregar configurações');
     }
   }
   
-  function loadForm() {
-    const settings = getSettings();
-    const form = document.getElementById('settings-form') as HTMLFormElement;
-    
-    if (form) {
-      Object.keys(settings).forEach(key => {
-        const input = form.elements.namedItem(key) as HTMLInputElement;
-        if (input) {
-          input.value = settings[key];
-        }
-      });
-    }
-  }
-  
-  loadForm();
+  loadSettings();
   
   const form = document.getElementById('settings-form');
-  form?.addEventListener('submit', (e) => {
+  form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const formData = new FormData(e.target as HTMLFormElement);
     const settings = Object.fromEntries(formData.entries());
     
-    if (saveSettings(settings)) {
+    try {
+      const response = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.details || 'Failed to save');
+      }
+      
       alert('Configurações salvas com sucesso!');
       
-      // Recarrega a página para aplicar mudanças
+      // Recarrega para aplicar mudanças
       setTimeout(() => {
         window.location.reload();
       }, 1000);
-    } else {
-      alert('Erro ao salvar configurações');
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      alert(`Erro ao salvar configurações: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   });
 </script>

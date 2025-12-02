@@ -1,3 +1,4 @@
+// FILE: src/components/solid/CartButton.tsx (corrigido)
 import { Show } from 'solid-js';
 import { cartStore } from '../../store/cart';
 import './CartButton.css';

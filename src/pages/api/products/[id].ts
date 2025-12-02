@@ -1,13 +1,19 @@
-// FILE: src/pages/api/products/[id].ts (atualizado)
+// FILE: src/pages/api/products/[id].ts (corrigido)
 import type { APIRoute } from 'astro';
-import { Database } from '../../../lib/db';
 
 export const PUT: APIRoute = async ({ params, request, locals }) => {
   try {
+    if (!locals.db) {
+      throw new Error('Database not initialized');
+    }
+
     const product = await request.json();
-    const db = new Database(locals.runtime.env.DB);
     
-    await db.updateProduct(product);
+    if (!product.id) {
+      product.id = params.id;
+    }
+    
+    await locals.db.updateProduct(product);
     
     return new Response(JSON.stringify({ success: true, product }), {
       status: 200,
@@ -15,7 +21,10 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
     });
   } catch (error) {
     console.error('Error updating product:', error);
-    return new Response(JSON.stringify({ error: 'Failed to update product' }), {
+    return new Response(JSON.stringify({ 
+      error: 'Failed to update product',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
@@ -24,11 +33,16 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
 
 export const DELETE: APIRoute = async ({ params, locals }) => {
   try {
+    if (!locals.db) {
+      throw new Error('Database not initialized');
+    }
+
     const { id } = params;
-    if (!id) throw new Error('ID required');
+    if (!id) {
+      throw new Error('ID required');
+    }
     
-    const db = new Database(locals.runtime.env.DB);
-    await db.deleteProduct(id);
+    await locals.db.deleteProduct(id);
     
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
@@ -36,7 +50,10 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     });
   } catch (error) {
     console.error('Error deleting product:', error);
-    return new Response(JSON.stringify({ error: 'Failed to delete product' }), {
+    return new Response(JSON.stringify({ 
+      error: 'Failed to delete product',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });

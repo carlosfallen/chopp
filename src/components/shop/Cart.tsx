@@ -1,6 +1,6 @@
-// FILE: src/components/shop/Cart.tsx
+// FILE: src/components/shop/Cart.tsx (corrigido)
 import { Show, For } from 'solid-js';
-import { cartStore } from '../../store/cart';
+import { cartStore, type CartItem } from '../../store/cart';
 import './Cart.css';
 
 export default function Cart() {
@@ -47,7 +47,7 @@ export default function Cart() {
             }
           >
             <For each={cartStore.items()}>
-              {(item) => (
+              {(item: CartItem) => (
                 <div class="cart-item">
                   <div class="cart-item-image">🍺</div>
                   <div class="cart-item-details">

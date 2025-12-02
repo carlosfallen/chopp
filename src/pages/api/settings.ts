@@ -1,11 +1,13 @@
-// FILE: src/pages/api/settings.ts (atualizado para D1)
+// FILE: src/pages/api/settings.ts (corrigido)
 import type { APIRoute } from 'astro';
-import { Database } from '../../lib/db';
 
 export const GET: APIRoute = async ({ locals }) => {
   try {
-    const db = new Database(locals.runtime.env.DB);
-    const settings = await db.getSettings();
+    if (!locals.db) {
+      throw new Error('Database not initialized');
+    }
+
+    const settings = await locals.db.getSettings();
     
     return new Response(JSON.stringify(settings), {
       status: 200,
@@ -13,7 +15,10 @@ export const GET: APIRoute = async ({ locals }) => {
     });
   } catch (error) {
     console.error('Error getting settings:', error);
-    return new Response(JSON.stringify({ error: 'Failed to get settings' }), {
+    return new Response(JSON.stringify({ 
+      error: 'Failed to get settings',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
@@ -22,10 +27,13 @@ export const GET: APIRoute = async ({ locals }) => {
 
 export const PUT: APIRoute = async ({ request, locals }) => {
   try {
+    if (!locals.db) {
+      throw new Error('Database not initialized');
+    }
+
     const settings = await request.json();
-    const db = new Database(locals.runtime.env.DB);
     
-    await db.saveSettings(settings);
+    await locals.db.saveSettings(settings);
     
     return new Response(JSON.stringify({ success: true, settings }), {
       status: 200,
@@ -33,7 +41,10 @@ export const PUT: APIRoute = async ({ request, locals }) => {
     });
   } catch (error) {
     console.error('Error saving settings:', error);
-    return new Response(JSON.stringify({ error: 'Failed to save settings' }), {
+    return new Response(JSON.stringify({ 
+      error: 'Failed to save settings',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });

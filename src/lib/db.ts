@@ -127,7 +127,7 @@ export class Database {
       sensorNotes: result.sensor_notes,
       idealFor: result.ideal_for,
       pricePerLiter: result.price_per_liter,
-      availableSizes: JSON.parse(result.available_sizes),
+      availableSizes: JSON.parse(result.available_sizes as string),
       imageUrl: result.image_url,
       featured: result.featured === 1,
       active: result.active === 1

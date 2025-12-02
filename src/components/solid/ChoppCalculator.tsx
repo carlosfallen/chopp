@@ -1,3 +1,4 @@
+// FILE: src/components/solid/ChoppCalculator.tsx (corrigido tipos)
 import { createSignal } from 'solid-js';
 import './ChoppCalculator.css';
 
@@ -44,7 +45,7 @@ export default function ChoppCalculator() {
             min="1"
             placeholder="Ex: 50"
             value={guests()}
-            onInput={(e) => setGuests(Number(e.currentTarget.value))}
+            onInput={(e: InputEvent) => setGuests(Number((e.currentTarget as HTMLInputElement).value))}
           />
         </div>
         
@@ -56,7 +57,7 @@ export default function ChoppCalculator() {
             min="1"
             placeholder="Ex: 4"
             value={hours()}
-            onInput={(e) => setHours(Number(e.currentTarget.value))}
+            onInput={(e: InputEvent) => setHours(Number((e.currentTarget as HTMLInputElement).value))}
           />
         </div>
         
@@ -65,7 +66,7 @@ export default function ChoppCalculator() {
           <select
             id="profile"
             value={profile()}
-            onChange={(e) => setProfile(e.currentTarget.value)}
+            onChange={(e: Event) => setProfile((e.currentTarget as HTMLSelectElement).value)}
           >
             <option value="leve">Bebe pouco</option>
             <option value="moderado">Moderado</option>

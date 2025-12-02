@@ -1,4 +1,4 @@
-// src/components/solid/AnimatedHeroNew.tsx
+// FILE: src/components/solid/AnimatedHeroNew.tsx (remover variável não usada)
 import { onMount, createSignal } from 'solid-js';
 import gsap from 'gsap';
 import './AnimatedHeroNew.css';
@@ -11,13 +11,9 @@ export default function AnimatedHeroNew() {
   let ctaRef: HTMLDivElement | undefined;
   let imageRef: HTMLImageElement | undefined;
   
-  const [mousePos, setMousePos] = createSignal({ x: 0, y: 0 });
-  
   onMount(() => {
-    // Timeline principal
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
     
-    // Animação de entrada
     tl.from(leftPaneRef, {
       x: -100,
       opacity: 0,
@@ -52,11 +48,9 @@ export default function AnimatedHeroNew() {
       duration: 1.2
     }, '-=0.8');
     
-    // Parallax na imagem
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 40;
       const y = (e.clientY / window.innerHeight - 0.5) * 40;
-      setMousePos({ x, y });
       
       if (imageRef) {
         gsap.to(imageRef, {

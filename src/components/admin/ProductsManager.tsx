@@ -1,4 +1,5 @@
-import { createSignal, For, Show, onMount } from 'solid-js';
+// FILE: src/components/admin/ProductsManager.tsx (completamente corrigido)
+import { createSignal, For, Show, onMount, type JSX } from 'solid-js';
 import './ProductsManager.css';
 
 type Product = {
@@ -21,7 +22,6 @@ export default function ProductsManager() {
   const [editingProduct, setEditingProduct] = createSignal<Product | null>(null);
   const [showModal, setShowModal] = createSignal(false);
   
-  // Load products from API
   onMount(async () => {
     await loadProducts();
   });
@@ -98,7 +98,7 @@ export default function ProductsManager() {
       <Show when={!loading()}>
         <div class="products-grid">
           <For each={products()}>
-            {(product) => (
+            {(product: Product) => (
               <div class="product-card-admin" classList={{ inactive: !product.active }}>
                 <div class="product-image-admin">
                   {product.imageUrl ? (
@@ -193,7 +193,6 @@ export default function ProductsManager() {
   );
 }
 
-// Modal Component
 function ProductModal(props: {
   product: Product | null;
   onSave: (product: Product) => void;
@@ -221,7 +220,7 @@ function ProductModal(props: {
   
   return (
     <div class="modal-overlay" onClick={props.onClose}>
-      <div class="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div class="modal-content" onClick={(e: MouseEvent) => e.stopPropagation()}>
         <div class="modal-header">
           <h2>{props.product ? 'Editar Produto' : 'Novo Produto'}</h2>
           <button class="modal-close" onClick={props.onClose}>✕</button>
@@ -235,7 +234,7 @@ function ProductModal(props: {
                 type="text" 
                 required
                 value={formData().name}
-                onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
+                onInput={(e: InputEvent) => setFormData({ ...formData(), name: (e.currentTarget as HTMLInputElement).value })}
               />
             </div>
             
@@ -243,7 +242,7 @@ function ProductModal(props: {
               <label>Categoria *</label>
               <select 
                 value={formData().category}
-                onChange={(e) => setFormData({ ...formData(), category: e.currentTarget.value })}
+                onChange={(e: Event) => setFormData({ ...formData(), category: (e.currentTarget as HTMLSelectElement).value })}
               >
                 <option value="Pilsen">Pilsen</option>
                 <option value="IPA">IPA</option>
@@ -260,9 +259,9 @@ function ProductModal(props: {
             <label>Descrição *</label>
             <textarea 
               required
-              rows="3"
+              rows={3}
               value={formData().description}
-              onInput={(e) => setFormData({ ...formData(), description: e.currentTarget.value })}
+              onInput={(e: InputEvent) => setFormData({ ...formData(), description: (e.currentTarget as HTMLTextAreaElement).value })}
             />
           </div>
           
@@ -272,7 +271,7 @@ function ProductModal(props: {
               type="text"
               placeholder="Ex: Dourado brilhante, espuma cremosa"
               value={formData().sensorNotes}
-              onInput={(e) => setFormData({ ...formData(), sensorNotes: e.currentTarget.value })}
+              onInput={(e: InputEvent) => setFormData({ ...formData(), sensorNotes: (e.currentTarget as HTMLInputElement).value })}
             />
           </div>
           
@@ -283,7 +282,7 @@ function ProductModal(props: {
                 type="text"
                 placeholder="Ex: 15-30 convidados"
                 value={formData().idealFor}
-                onInput={(e) => setFormData({ ...formData(), idealFor: e.currentTarget.value })}
+                onInput={(e: InputEvent) => setFormData({ ...formData(), idealFor: (e.currentTarget as HTMLInputElement).value })}
               />
             </div>
             
@@ -295,7 +294,7 @@ function ProductModal(props: {
                 min="0"
                 required
                 value={formData().pricePerLiter}
-                onInput={(e) => setFormData({ ...formData(), pricePerLiter: parseFloat(e.currentTarget.value) })}
+                onInput={(e: InputEvent) => setFormData({ ...formData(), pricePerLiter: parseFloat((e.currentTarget as HTMLInputElement).value) })}
               />
             </div>
           </div>
@@ -306,7 +305,7 @@ function ProductModal(props: {
               type="url"
               placeholder="https://..."
               value={formData().imageUrl || ''}
-              onInput={(e) => setFormData({ ...formData(), imageUrl: e.currentTarget.value })}
+              onInput={(e: InputEvent) => setFormData({ ...formData(), imageUrl: (e.currentTarget as HTMLInputElement).value })}
             />
           </div>
           
@@ -315,7 +314,7 @@ function ProductModal(props: {
               <input 
                 type="checkbox"
                 checked={formData().featured}
-                onChange={(e) => setFormData({ ...formData(), featured: e.currentTarget.checked })}
+                onChange={(e: Event) => setFormData({ ...formData(), featured: (e.currentTarget as HTMLInputElement).checked })}
               />
               <span>Produto em destaque</span>
             </label>
@@ -324,7 +323,7 @@ function ProductModal(props: {
               <input 
                 type="checkbox"
                 checked={formData().active}
-                onChange={(e) => setFormData({ ...formData(), active: e.currentTarget.checked })}
+                onChange={(e: Event) => setFormData({ ...formData(), active: (e.currentTarget as HTMLInputElement).checked })}
               />
               <span>Produto ativo</span>
             </label>

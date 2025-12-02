@@ -1,7 +1,7 @@
-// FILE: src/components/solid/ShopContent.tsx
+// FILE: src/components/solid/ShopContent.tsx (corrigido)
 import { createSignal, For, Show, onMount } from 'solid-js';
 import { products } from '../../data/products';
-import { cartStore } from '../../store/cart';
+import { cartStore, type CartItem } from '../../store/cart';
 import './ShopContent.css';
 
 export default function ShopContent() {
@@ -49,7 +49,7 @@ export default function ShopContent() {
       <div class="container">
         <div class="shop-filters">
           <For each={categories}>
-            {(cat) => (
+            {(cat: string) => (
               <button
                 class="filter-btn"
                 classList={{ active: filter() === cat }}
@@ -63,7 +63,7 @@ export default function ShopContent() {
         
         <div class="products-grid">
           <For each={filteredProducts()}>
-            {(product) => (
+            {(product: typeof products[0]) => (
               <div class="product-card visible">
                 <div class="product-image">🍺</div>
                 <div class="product-content">
@@ -73,7 +73,7 @@ export default function ShopContent() {
                   
                   <div class="product-sizes">
                     <For each={product.availableSizes}>
-                      {(size) => (
+                      {(size: number) => (
                         <button
                           class="size-btn"
                           classList={{ active: getSelectedSize(product.id) === size }}
@@ -126,7 +126,7 @@ export default function ShopContent() {
             }
           >
             <For each={cartStore.items()}>
-              {(item) => (
+              {(item: CartItem) => (
                 <div class="cart-item">
                   <div class="cart-item-image">🍺</div>
                   <div class="cart-item-details">

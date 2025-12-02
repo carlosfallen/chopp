@@ -1,4 +1,5 @@
-import { createSignal, For } from 'solid-js';
+// FILE: src/components/solid/FAQAccordion.tsx (corrigido)
+import { createSignal, For, type Accessor } from 'solid-js';
 import './FAQAccordion.css';
 
 export default function FAQAccordion() {
@@ -46,7 +47,7 @@ export default function FAQAccordion() {
   return (
     <div class="faq-container">
       <For each={faqs}>
-        {(faq, i) => (
+        {(faq: typeof faqs[0], i: Accessor<number>) => (
           <div class="faq-item" classList={{ active: openIndex() === i() }}>
             <button class="faq-question" onClick={() => toggle(i())}>
               <span>{faq.question}</span>

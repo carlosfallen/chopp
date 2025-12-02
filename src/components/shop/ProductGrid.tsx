@@ -1,3 +1,4 @@
+// FILE: src/components/shop/ProductGrid.tsx (corrigido)
 import { createSignal, For } from 'solid-js';
 import { products } from '../../data/products';
 import ProductCard from './ProductCard';
@@ -18,7 +19,7 @@ export default function ProductGrid() {
       <div class="container">
         <div class="product-filters">
           <For each={categories}>
-            {(cat) => (
+            {(cat: string) => (
               <button
                 class="filter-btn"
                 classList={{ active: filter() === cat }}
@@ -32,7 +33,7 @@ export default function ProductGrid() {
         
         <div class="product-grid">
           <For each={filteredProducts()}>
-            {(product) => <ProductCard product={product} />}
+            {(product: typeof products[0]) => <ProductCard product={product} />}
           </For>
         </div>
       </div>

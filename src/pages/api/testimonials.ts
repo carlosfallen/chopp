@@ -1,11 +1,13 @@
-// FILE: src/pages/api/testimonials.ts (atualizado para D1)
+// FILE: src/pages/api/testimonials.ts (corrigido)
 import type { APIRoute } from 'astro';
-import { Database } from '../../lib/db';
 
 export const GET: APIRoute = async ({ locals }) => {
   try {
-    const db = new Database(locals.runtime.env.DB);
-    const testimonials = await db.getTestimonials();
+    if (!locals.db) {
+      throw new Error('Database not initialized');
+    }
+
+    const testimonials = await locals.db.getTestimonials();
     
     return new Response(JSON.stringify({ testimonials }), {
       status: 200,
@@ -13,7 +15,10 @@ export const GET: APIRoute = async ({ locals }) => {
     });
   } catch (error) {
     console.error('Error getting testimonials:', error);
-    return new Response(JSON.stringify({ error: 'Failed to get testimonials' }), {
+    return new Response(JSON.stringify({ 
+      error: 'Failed to get testimonials',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
@@ -22,14 +27,17 @@ export const GET: APIRoute = async ({ locals }) => {
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    if (!locals.db) {
+      throw new Error('Database not initialized');
+    }
+
     const testimonial = await request.json();
-    const db = new Database(locals.runtime.env.DB);
     
     if (!testimonial.id) {
-      testimonial.id = `testimonial-${Date.now()}`;
+      testimonial.id = `testimonial-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
     }
     
-    await db.createTestimonial(testimonial);
+    await locals.db.createTestimonial(testimonial);
     
     return new Response(JSON.stringify({ success: true, testimonial }), {
       status: 201,
@@ -37,7 +45,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   } catch (error) {
     console.error('Error creating testimonial:', error);
-    return new Response(JSON.stringify({ error: 'Failed to create testimonial' }), {
+    return new Response(JSON.stringify({ 
+      error: 'Failed to create testimonial',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
@@ -46,10 +57,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
 export const PUT: APIRoute = async ({ request, locals }) => {
   try {
+    if (!locals.db) {
+      throw new Error('Database not initialized');
+    }
+
     const testimonial = await request.json();
-    const db = new Database(locals.runtime.env.DB);
     
-    await db.updateTestimonial(testimonial);
+    await locals.db.updateTestimonial(testimonial);
     
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
@@ -57,7 +71,10 @@ export const PUT: APIRoute = async ({ request, locals }) => {
     });
   } catch (error) {
     console.error('Error updating testimonial:', error);
-    return new Response(JSON.stringify({ error: 'Failed to update testimonial' }), {
+    return new Response(JSON.stringify({ 
+      error: 'Failed to update testimonial',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
@@ -66,10 +83,13 @@ export const PUT: APIRoute = async ({ request, locals }) => {
 
 export const DELETE: APIRoute = async ({ request, locals }) => {
   try {
+    if (!locals.db) {
+      throw new Error('Database not initialized');
+    }
+
     const { id } = await request.json();
-    const db = new Database(locals.runtime.env.DB);
     
-    await db.deleteTestimonial(id);
+    await locals.db.deleteTestimonial(id);
     
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
@@ -77,7 +97,10 @@ export const DELETE: APIRoute = async ({ request, locals }) => {
     });
   } catch (error) {
     console.error('Error deleting testimonial:', error);
-    return new Response(JSON.stringify({ error: 'Failed to delete testimonial' }), {
+    return new Response(JSON.stringify({ 
+      error: 'Failed to delete testimonial',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
