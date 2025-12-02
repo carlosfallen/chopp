@@ -31,7 +31,10 @@ export const GET: APIRoute = async ({ locals }) => {
       primaryColor: settings.primaryColor || '#d4af37',
       secondaryColor: settings.secondaryColor || '#ffbf00',
       showStats: settings.showStats !== false,
-      showBadge: settings.showBadge !== false
+      showBadge: settings.showBadge !== false,
+      experienceTitle: settings.experienceTitle || 'Experiência completa de bar em casa',
+      experienceSubtitle: settings.experienceSubtitle || 'Chopeira, instalação profissional e suporte durante todo o evento',
+      experienceBackgroundImage: settings.experienceBackgroundImage || ''
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
@@ -60,7 +63,8 @@ export const PUT: APIRoute = async ({ request, locals }) => {
     const keys = [
       'heroTitle', 'heroSubtitle', 'heroImage',
       'backgroundColor', 'primaryColor', 'secondaryColor',
-      'showStats', 'showBadge'
+      'showStats', 'showBadge',
+      'experienceTitle', 'experienceSubtitle', 'experienceBackgroundImage'
     ];
 
     for (const key of keys) {

@@ -70,6 +70,45 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         </div>
       </div>
 
+      <!-- Experience Section -->
+      <div class="form-section">
+        <h2>✨ Seção Experiência Completa</h2>
+
+        <div class="form-group">
+          <label>Título da Seção</label>
+          <input
+            type="text"
+            name="experienceTitle"
+            id="experienceTitle"
+            placeholder="Experiência completa de bar em casa"
+            required />
+        </div>
+
+        <div class="form-group">
+          <label>Subtítulo</label>
+          <textarea
+            name="experienceSubtitle"
+            id="experienceSubtitle"
+            rows="2"
+            placeholder="Chopeira, instalação profissional e suporte durante todo o evento"
+            required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Imagem de Fundo (opcional)</label>
+          <select id="image-selector-experience" class="image-select">
+            <option value="">Carregando imagens...</option>
+          </select>
+          <input
+            type="url"
+            name="experienceBackgroundImage"
+            id="experienceBackgroundImage"
+            placeholder="ou cole URL diretamente ou deixe vazio para sem imagem" />
+        </div>
+
+        <div class="image-preview" id="experience-preview"></div>
+      </div>
+
       <!-- Cores e Estilo -->
       <div class="form-section">
         <h2>🎨 Cores e Estilo</h2>
@@ -356,15 +395,28 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       if (!response.ok) throw new Error('Failed to load images');
 
       const data = await response.json();
-      const selector = document.getElementById('image-selector-hero') as HTMLSelectElement;
 
-      if (selector && data.images) {
-        selector.innerHTML = '<option value="">Selecione uma imagem</option>';
+      // Populate hero image selector
+      const heroSelector = document.getElementById('image-selector-hero') as HTMLSelectElement;
+      if (heroSelector && data.images) {
+        heroSelector.innerHTML = '<option value="">Selecione uma imagem</option>';
         data.images.forEach((img: any) => {
           const option = document.createElement('option');
           option.value = img.url;
           option.textContent = img.key;
-          selector.appendChild(option);
+          heroSelector.appendChild(option);
+        });
+      }
+
+      // Populate experience image selector
+      const experienceSelector = document.getElementById('image-selector-experience') as HTMLSelectElement;
+      if (experienceSelector && data.images) {
+        experienceSelector.innerHTML = '<option value="">Selecione uma imagem (ou deixe vazio)</option>';
+        data.images.forEach((img: any) => {
+          const option = document.createElement('option');
+          option.value = img.url;
+          option.textContent = img.key;
+          experienceSelector.appendChild(option);
         });
       }
     } catch (error) {
@@ -451,7 +503,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     });
   });
 
-  // Seletor de imagem
+  // Seletor de imagem Hero
   const imageSelector = document.getElementById('image-selector-hero') as HTMLSelectElement;
   const heroImageInput = document.getElementById('heroImage') as HTMLInputElement;
 
@@ -467,6 +519,32 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     const url = (e.target as HTMLInputElement).value;
     if (url) updateImagePreview(url);
   });
+
+  // Seletor de imagem Experience
+  const experienceImageSelector = document.getElementById('image-selector-experience') as HTMLSelectElement;
+  const experienceImageInput = document.getElementById('experienceBackgroundImage') as HTMLInputElement;
+
+  experienceImageSelector?.addEventListener('change', (e) => {
+    const url = (e.target as HTMLSelectElement).value;
+    experienceImageInput.value = url;
+    if (url) updateExperiencePreview(url);
+  });
+
+  experienceImageInput?.addEventListener('input', (e) => {
+    const url = (e.target as HTMLInputElement).value;
+    if (url) updateExperiencePreview(url);
+    else {
+      const preview = document.getElementById('experience-preview');
+      if (preview) preview.innerHTML = '';
+    }
+  });
+
+  function updateExperiencePreview(url: string) {
+    const preview = document.getElementById('experience-preview');
+    if (preview) {
+      preview.innerHTML = `<img src="${url}" alt="Preview" style="max-width: 100%; max-height: 300px; border-radius: var(--border-radius); border: 2px solid var(--color-accent-gold);" />`;
+    }
+  }
 
   // Preview de alterações
   document.getElementById('preview-btn')?.addEventListener('click', () => {

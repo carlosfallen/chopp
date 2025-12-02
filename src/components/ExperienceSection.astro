@@ -1,12 +1,37 @@
 ---
 import AnimatedExperience from './solid/AnimatedExperience';
+
+// Fetch experience section configuration
+let experienceConfig = {
+  title: 'Experiência completa de bar em casa',
+  subtitle: 'Chopeira, instalação profissional e suporte durante todo o evento',
+  backgroundImage: ''
+};
+
+try {
+  const response = await fetch(new URL('/api/layout-config', Astro.url));
+  if (response.ok) {
+    const data = await response.json();
+    if (data.experienceTitle) experienceConfig.title = data.experienceTitle;
+    if (data.experienceSubtitle) experienceConfig.subtitle = data.experienceSubtitle;
+    if (data.experienceBackgroundImage) experienceConfig.backgroundImage = data.experienceBackgroundImage;
+  }
+} catch (error) {
+  console.error('Error loading experience config:', error);
+}
 ---
 
-<section class="section experience-section" id="experiencia">
+<section
+  class="section experience-section"
+  id="experiencia"
+  style={experienceConfig.backgroundImage
+    ? `background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${experienceConfig.backgroundImage}); background-size: cover; background-position: center;`
+    : ''}
+>
   <div class="container">
-    <h2 class="section-title">Experiência completa de bar em casa</h2>
+    <h2 class="section-title">{experienceConfig.title}</h2>
     <p class="section-subtitle">
-      Chopeira, instalação profissional e suporte durante todo o evento
+      {experienceConfig.subtitle}
     </p>
     <AnimatedExperience client:idle />
   </div>

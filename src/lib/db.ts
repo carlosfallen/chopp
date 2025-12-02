@@ -300,19 +300,20 @@ export class Database {
     await this.db.prepare(`
       INSERT INTO orders (
         id, customer_name, customer_phone, customer_email, payment_method,
-        items, total, status, delivery_date, address
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        items, total, status, delivery_date, address, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       order.id,
       order.customerName,
       order.customerPhone,
-      order.customerEmail,
+      order.customerEmail || null,
       order.paymentMethod,
       JSON.stringify(order.items),
       order.total,
       order.status,
       order.deliveryDate || null,
-      order.address || null
+      order.address || null,
+      order.createdAt
     ).run();
   }
 
