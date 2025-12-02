@@ -24,7 +24,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
 
     // URL pública (configure seu domínio custom no Cloudflare)
-    const publicUrl = `https://f19932f2396bfc72bd1f3d6be3c68c9f.r2.cloudflarestorage.com/chopp-delivery`;
+    const publicUrl = `https://f19932f2396bfc72bd1f3d6be3c68c9f.r2.cloudflarestorage.com/chopp-delivery/${fileName}`;
+
 
     return new Response(JSON.stringify({ url: publicUrl }), {
       status: 200,

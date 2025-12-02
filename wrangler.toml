@@ -9,10 +9,10 @@ binding = "DB"
 database_name = "chopp_delivery_db"
 database_id = "1c6da776-060b-4cda-82d4-0d34c0641c42"
 
-# R2 Storage
 [[r2_buckets]]
-binding = "IMAGES"
-bucket_name = "chopp-delivery-images"
+binding = "BUCKET"
+bucket_name = "chopp-delivery"
+preview_bucket_name = "chopp-delivery-preview"
 
 # KV Storage
 [[kv_namespaces]]
