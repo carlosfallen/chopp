@@ -11,6 +11,11 @@ export default defineConfig({
       enabled: true
     }
   }),
+  image: {
+    service: {
+      entrypoint: "astro/assets/services/sharp-not-installed"
+    }
+  },
   integrations: [solidJs()],
   vite: {
     resolve: {

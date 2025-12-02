@@ -1,5 +1,5 @@
-// FILE: src/components/admin/ProductsManager.tsx (completamente corrigido)
-import { createSignal, For, Show, onMount, type JSX } from 'solid-js';
+// FILE: src/components/admin/ProductsManager.tsx
+import { createSignal, For, Show, onMount } from 'solid-js';
 import './ProductsManager.css';
 
 type Product = {
