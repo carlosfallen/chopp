@@ -323,12 +323,13 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   
   document.getElementById('brand-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const brandData = {
       id: editingId,
       name: (document.getElementById('brand-name') as HTMLInputElement).value,
       logoUrl: (document.getElementById('brand-logo') as HTMLInputElement).value,
-      active: (document.getElementById('brand-active') as HTMLInputElement).checked
+      active: (document.getElementById('brand-active') as HTMLInputElement).checked,
+      order: editingId ? brands.find(b => b.id === editingId)?.order : brands.length + 1
     };
     
     try {

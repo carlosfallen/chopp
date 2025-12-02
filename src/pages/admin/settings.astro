@@ -24,9 +24,15 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       <div class="settings-section">
         <h3>Imagem Hero (Página Inicial)</h3>
         <div class="form-group">
+          <label>Selecione uma imagem do R2</label>
+          <select id="image-selector" class="image-select">
+            <option value="">Carregando imagens...</option>
+          </select>
+          <small>Ou cole a URL manualmente abaixo</small>
+        </div>
+        <div class="form-group">
           <label>URL da Imagem Hero</label>
-          <input type="url" name="heroImage" placeholder="https://..." />
-          <small>Cole a URL da imagem que você fez upload</small>
+          <input type="url" name="heroImage" id="heroImage" placeholder="https://..." />
         </div>
         <div class="image-preview" id="hero-preview"></div>
       </div>
@@ -123,17 +129,53 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     max-height: 300px;
     object-fit: cover;
   }
+
+  .image-select {
+    width: 100%;
+    padding: var(--spacing-sm);
+    background: var(--color-bg-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-sm);
+  }
 </style>
 
 <script>
+  async function loadImages() {
+    try {
+      const response = await fetch('/api/images');
+      if (!response.ok) throw new Error('Failed to load images');
+
+      const data = await response.json();
+      const selector = document.getElementById('image-selector') as HTMLSelectElement;
+
+      if (selector && data.images) {
+        selector.innerHTML = '<option value="">Selecione uma imagem</option>';
+        data.images.forEach((img: any) => {
+          const option = document.createElement('option');
+          option.value = img.url;
+          option.textContent = img.key;
+          selector.appendChild(option);
+        });
+      }
+    } catch (error) {
+      console.error('Error loading images:', error);
+      const selector = document.getElementById('image-selector') as HTMLSelectElement;
+      if (selector) {
+        selector.innerHTML = '<option value="">Erro ao carregar imagens</option>';
+      }
+    }
+  }
+
   async function loadSettings() {
     try {
       const response = await fetch('/api/settings');
       if (!response.ok) throw new Error('Failed to load settings');
-      
+
       const settings = await response.json();
       const form = document.getElementById('settings-form') as HTMLFormElement;
-      
+
       if (form) {
         Object.keys(settings).forEach(key => {
           const input = form.elements.namedItem(key) as HTMLInputElement;
@@ -141,7 +183,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
             input.value = settings[key];
           }
         });
-        
+
         if (settings.heroImage) {
           updatePreview(settings.heroImage);
         }
@@ -160,7 +202,17 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   
   const form = document.getElementById('settings-form');
   const heroInput = form?.elements.namedItem('heroImage') as HTMLInputElement;
-  
+  const imageSelector = document.getElementById('image-selector') as HTMLSelectElement;
+
+  // Quando selecionar uma imagem do dropdown, atualizar o input
+  imageSelector?.addEventListener('change', (e) => {
+    const url = (e.target as HTMLSelectElement).value;
+    if (url && heroInput) {
+      heroInput.value = url;
+      updatePreview(url);
+    }
+  });
+
   heroInput?.addEventListener('input', (e) => {
     const url = (e.target as HTMLInputElement).value;
     if (url) updatePreview(url);
@@ -192,5 +244,6 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     }
   });
   
+  loadImages();
   loadSettings();
 </script>
