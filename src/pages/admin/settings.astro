@@ -1,5 +1,5 @@
 ---
-// FILE: src/pages/admin/settings.astro (sem localStorage)
+// FILE: src/pages/admin/settings.astro
 import AdminLayout from '../../layouts/AdminLayout.astro';
 ---
 
@@ -22,10 +22,20 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       </div>
       
       <div class="settings-section">
+        <h3>Imagem Hero (Página Inicial)</h3>
+        <div class="form-group">
+          <label>URL da Imagem Hero</label>
+          <input type="url" name="heroImage" placeholder="https://..." />
+          <small>Cole a URL da imagem que você fez upload</small>
+        </div>
+        <div class="image-preview" id="hero-preview"></div>
+      </div>
+      
+      <div class="settings-section">
         <h3>Informações de Contato</h3>
         <div class="form-group">
-          <label>WhatsApp</label>
-          <input type="text" name="whatsapp" required />
+          <label>WhatsApp (com DDD)</label>
+          <input type="text" name="whatsapp" placeholder="(11) 99999-9999" required />
         </div>
         <div class="form-group">
           <label>E-mail</label>
@@ -95,9 +105,23 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     color: var(--color-text-primary);
   }
   
-  .form-group input:focus {
-    outline: none;
-    border-color: var(--color-accent-gold);
+  .form-group small {
+    display: block;
+    margin-top: var(--spacing-xs);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+  
+  .image-preview {
+    margin-top: var(--spacing-md);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+  }
+  
+  .image-preview img {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
   }
 </style>
 
@@ -105,9 +129,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   async function loadSettings() {
     try {
       const response = await fetch('/api/settings');
-      if (!response.ok) {
-        throw new Error('Failed to load settings');
-      }
+      if (!response.ok) throw new Error('Failed to load settings');
       
       const settings = await response.json();
       const form = document.getElementById('settings-form') as HTMLFormElement;
@@ -119,16 +141,31 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
             input.value = settings[key];
           }
         });
+        
+        if (settings.heroImage) {
+          updatePreview(settings.heroImage);
+        }
       }
     } catch (error) {
       console.error('Error loading settings:', error);
-      alert('Erro ao carregar configurações');
     }
   }
   
-  loadSettings();
+  function updatePreview(url: string) {
+    const preview = document.getElementById('hero-preview');
+    if (preview && url) {
+      preview.innerHTML = `<img src="${url}" alt="Hero preview" />`;
+    }
+  }
   
   const form = document.getElementById('settings-form');
+  const heroInput = form?.elements.namedItem('heroImage') as HTMLInputElement;
+  
+  heroInput?.addEventListener('input', (e) => {
+    const url = (e.target as HTMLInputElement).value;
+    if (url) updatePreview(url);
+  });
+  
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -148,14 +185,12 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       }
       
       alert('Configurações salvas com sucesso!');
-      
-      // Recarrega para aplicar mudanças
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       console.error('Error saving settings:', error);
-      alert(`Erro ao salvar configurações: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert(`Erro ao salvar: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   });
+  
+  loadSettings();
 </script>

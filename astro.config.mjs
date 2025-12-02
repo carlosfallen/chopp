@@ -1,4 +1,4 @@
-// FILE: astro.config.mjs (atualizado)
+// FILE: astro.config.mjs
 import { defineConfig } from 'astro/config';
 import solidJs from '@astrojs/solid-js';
 import cloudflare from '@astrojs/cloudflare';
@@ -8,20 +8,14 @@ export default defineConfig({
   adapter: cloudflare({
     mode: 'directory',
     platformProxy: {
-      enabled: true
+      enabled: true,
+      configPath: 'wrangler.toml'
     }
   }),
-  image: {
-    service: {
-      entrypoint: "astro/assets/services/sharp-not-installed"
-    }
-  },
   integrations: [solidJs()],
   vite: {
-    resolve: {
-      alias: {
-        '@': '/src'
-      }
+    ssr: {
+      external: ['node:async_hooks']
     }
   }
 });

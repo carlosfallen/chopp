@@ -1,11 +1,16 @@
 ---
+// FILE: src/components/Header.astro
 import CartButton from './solid/CartButton';
+import { getSettings } from '../lib/content';
+
+const settings = await getSettings(Astro);
+const whatsappNumber = settings.whatsapp.replace(/\D/g, '');
 ---
 
 <header class="header" id="header">
   <div class="container header-container">
     <a href="/" class="logo">
-      <span class="logo-text">Chopehaus</span>
+      <span class="logo-text">{settings.brandName}</span>
     </a>
     
     <nav class="nav" id="nav">
@@ -20,7 +25,7 @@ import CartButton from './solid/CartButton';
     
     <div class="header-actions">
       <CartButton client:load />
-      <a href="https://wa.me/5511999999999?text=Olá!%20Gostaria%20de%20fazer%20um%20pedido" 
+      <a href={`https://wa.me/55${whatsappNumber}?text=Olá!%20Gostaria%20de%20fazer%20um%20pedido`} 
          class="btn btn-primary" target="_blank">
         Pedir pelo WhatsApp
       </a>
@@ -163,7 +168,6 @@ import CartButton from './solid/CartButton';
     nav?.classList.toggle('active');
   });
   
-  // Close mobile menu on link click
   nav?.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
       nav?.classList.remove('active');

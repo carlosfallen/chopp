@@ -40,10 +40,40 @@ export default function ProductsManager() {
     }
   };
   
+  const openModal = (product?: Product) => {
+    if (product) {
+      setEditingProduct(product);
+    } else {
+      setEditingProduct({
+        id: '',
+        name: '',
+        category: 'Pilsen',
+        description: '',
+        sensorNotes: '',
+        idealFor: '',
+        pricePerLiter: 0,
+        availableSizes: [30, 50],
+        imageUrl: '',
+        featured: false,
+        active: true
+      });
+    }
+    setShowModal(true);
+  };
+  
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingProduct(null);
+  };
+  
   const saveProduct = async (product: Product) => {
     try {
       const method = product.id ? 'PUT' : 'POST';
       const url = product.id ? `/api/products/${product.id}` : '/api/products';
+      
+      if (!product.id) {
+        product.id = `product-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+      }
       
       const response = await fetch(url, {
         method,
@@ -54,8 +84,7 @@ export default function ProductsManager() {
       if (!response.ok) throw new Error('Failed to save product');
       
       await loadProducts();
-      setShowModal(false);
-      setEditingProduct(null);
+      closeModal();
       alert('Produto salvo com sucesso!');
     } catch (error) {
       console.error('Error saving product:', error);
@@ -88,6 +117,14 @@ export default function ProductsManager() {
   const toggleFeatured = async (product: Product) => {
     await saveProduct({ ...product, featured: !product.featured });
   };
+  
+  // Botão adicionar produto no topo
+  window.addEventListener('DOMContentLoaded', () => {
+    const addBtn = document.getElementById('add-product-btn');
+    if (addBtn) {
+      addBtn.addEventListener('click', () => openModal());
+    }
+  });
   
   return (
     <div class="products-manager">
@@ -139,10 +176,7 @@ export default function ProductsManager() {
                   <div class="product-actions">
                     <button 
                       class="btn-icon" 
-                      onClick={() => {
-                        setEditingProduct(product);
-                        setShowModal(true);
-                      }}
+                      onClick={() => openModal(product)}
                       title="Editar"
                     >
                       ✏️
@@ -183,10 +217,7 @@ export default function ProductsManager() {
         <ProductModal 
           product={editingProduct()}
           onSave={saveProduct}
-          onClose={() => {
-            setShowModal(false);
-            setEditingProduct(null);
-          }}
+          onClose={closeModal}
         />
       </Show>
     </div>
@@ -208,6 +239,7 @@ function ProductModal(props: {
       idealFor: '',
       pricePerLiter: 0,
       availableSizes: [30, 50],
+      imageUrl: '',
       featured: false,
       active: true
     }
@@ -222,7 +254,7 @@ function ProductModal(props: {
     <div class="modal-overlay" onClick={props.onClose}>
       <div class="modal-content" onClick={(e: MouseEvent) => e.stopPropagation()}>
         <div class="modal-header">
-          <h2>{props.product ? 'Editar Produto' : 'Novo Produto'}</h2>
+          <h2>{props.product?.id ? 'Editar Produto' : 'Novo Produto'}</h2>
           <button class="modal-close" onClick={props.onClose}>✕</button>
         </div>
         
@@ -234,7 +266,7 @@ function ProductModal(props: {
                 type="text" 
                 required
                 value={formData().name}
-                onInput={(e: InputEvent) => setFormData({ ...formData(), name: (e.currentTarget as HTMLInputElement).value })}
+                onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
               />
             </div>
             
@@ -242,7 +274,7 @@ function ProductModal(props: {
               <label>Categoria *</label>
               <select 
                 value={formData().category}
-                onChange={(e: Event) => setFormData({ ...formData(), category: (e.currentTarget as HTMLSelectElement).value })}
+                onChange={(e) => setFormData({ ...formData(), category: e.currentTarget.value })}
               >
                 <option value="Pilsen">Pilsen</option>
                 <option value="IPA">IPA</option>
@@ -261,7 +293,7 @@ function ProductModal(props: {
               required
               rows={3}
               value={formData().description}
-              onInput={(e: InputEvent) => setFormData({ ...formData(), description: (e.currentTarget as HTMLTextAreaElement).value })}
+              onInput={(e) => setFormData({ ...formData(), description: e.currentTarget.value })}
             />
           </div>
           
@@ -271,7 +303,7 @@ function ProductModal(props: {
               type="text"
               placeholder="Ex: Dourado brilhante, espuma cremosa"
               value={formData().sensorNotes}
-              onInput={(e: InputEvent) => setFormData({ ...formData(), sensorNotes: (e.currentTarget as HTMLInputElement).value })}
+              onInput={(e) => setFormData({ ...formData(), sensorNotes: e.currentTarget.value })}
             />
           </div>
           
@@ -282,7 +314,7 @@ function ProductModal(props: {
                 type="text"
                 placeholder="Ex: 15-30 convidados"
                 value={formData().idealFor}
-                onInput={(e: InputEvent) => setFormData({ ...formData(), idealFor: (e.currentTarget as HTMLInputElement).value })}
+                onInput={(e) => setFormData({ ...formData(), idealFor: e.currentTarget.value })}
               />
             </div>
             
@@ -294,7 +326,7 @@ function ProductModal(props: {
                 min="0"
                 required
                 value={formData().pricePerLiter}
-                onInput={(e: InputEvent) => setFormData({ ...formData(), pricePerLiter: parseFloat((e.currentTarget as HTMLInputElement).value) })}
+                onInput={(e) => setFormData({ ...formData(), pricePerLiter: parseFloat(e.currentTarget.value) })}
               />
             </div>
           </div>
@@ -303,10 +335,11 @@ function ProductModal(props: {
             <label>URL da Imagem</label>
             <input 
               type="url"
-              placeholder="https://..."
+              placeholder="Cole a URL da imagem"
               value={formData().imageUrl || ''}
-              onInput={(e: InputEvent) => setFormData({ ...formData(), imageUrl: (e.currentTarget as HTMLInputElement).value })}
+              onInput={(e) => setFormData({ ...formData(), imageUrl: e.currentTarget.value })}
             />
+            <small>Vá em Admin → Imagens para fazer upload</small>
           </div>
           
           <div class="form-group">
@@ -314,7 +347,7 @@ function ProductModal(props: {
               <input 
                 type="checkbox"
                 checked={formData().featured}
-                onChange={(e: Event) => setFormData({ ...formData(), featured: (e.currentTarget as HTMLInputElement).checked })}
+                onChange={(e) => setFormData({ ...formData(), featured: e.currentTarget.checked })}
               />
               <span>Produto em destaque</span>
             </label>
@@ -323,7 +356,7 @@ function ProductModal(props: {
               <input 
                 type="checkbox"
                 checked={formData().active}
-                onChange={(e: Event) => setFormData({ ...formData(), active: (e.currentTarget as HTMLInputElement).checked })}
+                onChange={(e) => setFormData({ ...formData(), active: e.currentTarget.checked })}
               />
               <span>Produto ativo</span>
             </label>

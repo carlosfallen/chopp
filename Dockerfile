@@ -21,11 +21,11 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN mkdir -p .wrangler/state/v3/d1
-RUN touch .wrangler/state/v3/d1/miniflare-D1DatabaseObject/chopp_db.sqlite
+RUN mkdir -p .wrangler/state/v3/d1/miniflare-D1DatabaseObject
+RUN touch .wrangler/state/v3/d1/miniflare-D1DatabaseObject/1c6da776-060b-4cda-82d4-0d34c0641c42.sqlite
 
 COPY schema.sql ./
-RUN npx wrangler d1 execute chopp_db --local --file=schema.sql || echo "DB already initialized"
+RUN npx wrangler d1 execute chopp_delivery_db --local --file=schema.sql || echo "DB already initialized"
 
 RUN npm run build
 
@@ -46,4 +46,7 @@ RUN npm install -g wrangler
 EXPOSE 4321
 EXPOSE 8787
 
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0"]
+ENV HOST=0.0.0.0
+ENV PORT=4321
+
+CMD ["npm", "run", "dev", "--host", "0.0.0.0"]

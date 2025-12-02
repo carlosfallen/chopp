@@ -1,5 +1,7 @@
-// FILE: src/pages/api/brands.ts (corrigido)
+// FILE: src/pages/api/brands.ts
 import type { APIRoute } from 'astro';
+
+export const prerender = false;
 
 export const GET: APIRoute = async ({ locals }) => {
   try {

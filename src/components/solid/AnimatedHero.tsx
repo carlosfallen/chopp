@@ -1,101 +1,176 @@
-// FILE: src/components/solid/AnimatedHero.tsx (corrigido)
+// FILE: src/components/solid/AnimatedHeroNew.tsx
 import { onMount } from 'solid-js';
 import gsap from 'gsap';
-import './AnimatedHero.css';
+import './AnimatedHeroNew.css';
 
-export default function AnimatedHero() {
-  let containerRef: HTMLDivElement | undefined;
+export default function AnimatedHeroNew() {
+  let leftPaneRef: HTMLDivElement | undefined;
+  let rightPaneRef: HTMLDivElement | undefined;
   let titleRef: HTMLHeadingElement | undefined;
   let subtitleRef: HTMLParagraphElement | undefined;
   let ctaRef: HTMLDivElement | undefined;
-  let badgesRef: HTMLDivElement | undefined;
+  let imageRef: HTMLImageElement | undefined;
   
-  onMount(() => {
-    const tl = gsap.timeline({ 
-      defaults: { ease: 'power3.out' },
-      onComplete: () => {
-        // Garante que os elementos fiquem visíveis após a animação
-        gsap.set([titleRef, subtitleRef, ctaRef?.children, badgesRef?.children], {
-          clearProps: 'all'
-        });
+  // Buscar imagem do hero das configurações
+  const [heroImage, setHeroImage] = window.createSignal?.('https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&q=80') || 
+    (() => ['https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&q=80']);
+  
+  onMount(async () => {
+    // Buscar configurações
+    try {
+      const response = await fetch('/api/settings');
+      if (response.ok) {
+        const settings = await response.json();
+        if (settings.heroImage && setHeroImage) {
+          setHeroImage(settings.heroImage);
+        }
       }
-    });
+    } catch (error) {
+      console.error('Error loading settings:', error);
+    }
     
-    tl.from(titleRef, {
-      y: 60,
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    
+    tl.from(leftPaneRef, {
+      x: -100,
       opacity: 0,
       duration: 1
     })
+    .from(titleRef?.children || [], {
+      y: 80,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.2
+    }, '-=0.6')
     .from(subtitleRef, {
       y: 40,
       opacity: 0,
-      duration: 0.8
-    }, '-=0.6')
+      duration: 0.7
+    }, '-=0.4')
     .from(ctaRef?.children || [], {
       y: 30,
+      scale: 0.9,
       opacity: 0,
       duration: 0.6,
-      stagger: 0.15,
-      clearProps: 'all'
-    }, '-=0.4')
-    .from(badgesRef?.children || [], {
-      y: 20,
+      stagger: 0.15
+    }, '-=0.3')
+    .from(rightPaneRef, {
+      x: 100,
       opacity: 0,
-      duration: 0.5,
-      stagger: 0.1,
-      clearProps: 'all'
-    }, '-=0.3');
+      duration: 1
+    }, '-=1')
+    .from(imageRef, {
+      scale: 1.2,
+      opacity: 0,
+      duration: 1.2
+    }, '-=0.8');
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 40;
+      const y = (e.clientY / window.innerHeight - 0.5) * 40;
+      
+      if (imageRef) {
+        gsap.to(imageRef, {
+          x: x,
+          y: y,
+          duration: 1.5,
+          ease: 'power2.out'
+        });
+      }
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   });
   
   return (
-    <div class="hero-content" ref={containerRef}>
-      <div class="hero-text">
-        <h1 ref={titleRef}>
-          Chopp de bar na sua casa,<br/>
-          <span class="highlight">sem complicação</span>
-        </h1>
-        
-        <p class="hero-subtitle" ref={subtitleRef}>
-          Chopeira gratuita, entrega rápida e instalação profissional.<br/>
-          Transforme qualquer evento em uma experiência memorável.
-        </p>
-        
-        <div class="hero-cta" ref={ctaRef}>
-          <a href="/#calculadora" class="btn btn-primary btn-lg">
-            Calcular meu chopp ideal
-          </a>
-          <a href="/loja" class="btn btn-secondary btn-lg">
-            Ver produtos
-          </a>
+    <>
+      <div class="hero-left-pane" ref={leftPaneRef}>
+        <div class="hero-content-wrapper">
+          <div class="hero-badge">
+            <span class="badge-icon">🏆</span>
+            <span>Melhor Chopp Delivery 2024</span>
+          </div>
+          
+          <h1 ref={titleRef}>
+            <span class="title-line">Chopp de Bar</span>
+            <span class="title-line highlight">Na Sua Casa</span>
+            <span class="title-line">Sem Complicação</span>
+          </h1>
+          
+          <p class="hero-subtitle" ref={subtitleRef}>
+            Chopeira profissional gratuita, entrega express e instalação completa.
+            <strong> Transforme qualquer momento em celebração.</strong>
+          </p>
+          
+          <div class="hero-cta-group" ref={ctaRef}>
+            <a href="/#calculadora" class="btn btn-primary btn-hero">
+              <span>Calcular Quantidade</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </a>
+            <a href="/loja" class="btn btn-secondary btn-hero">
+              <span>Ver Produtos</span>
+            </a>
+          </div>
+          
+          <div class="hero-stats">
+            <div class="stat-item">
+              <strong>5.000+</strong>
+              <span>Eventos Realizados</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <strong>4.9/5</strong>
+              <span>Avaliação Média</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <strong>24h</strong>
+              <span>Entrega Express</span>
+            </div>
+          </div>
         </div>
-        
-        <div class="hero-badges" ref={badgesRef}>
-          <div class="badge">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-              <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-            <span>Chopeira gratuita*</span>
-          </div>
-          <div class="badge">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-            <span>Entrega e instalação</span>
-          </div>
-          <div class="badge">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-              <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
-            </svg>
-            <span>Marcas premium</span>
-          </div>
-        </div>
-        
-        <p class="hero-disclaimer">
-          *Empréstimo da chopeira mediante pedido mínimo de 30L. Consulte condições.
-        </p>
       </div>
-    </div>
+      
+      <div class="hero-right-pane" ref={rightPaneRef}>
+        <div class="hero-image-wrapper">
+          <div class="image-glow"></div>
+          <img 
+            ref={imageRef}
+            src={heroImage?.[0] || heroImage || 'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&q=80'}
+            alt="Chopeira profissional servindo chopp gelado"
+            class="hero-image"
+          />
+          
+          <div class="floating-card card-1">
+            <div class="card-icon">🍺</div>
+            <div class="card-text">
+              <strong>8+ Estilos</strong>
+              <span>Pilsen, IPA, Weiss...</span>
+            </div>
+          </div>
+          
+          <div class="floating-card card-2">
+            <div class="card-icon">❄️</div>
+            <div class="card-text">
+              <strong>-2°C</strong>
+              <span>Temperatura ideal</span>
+            </div>
+          </div>
+          
+          <div class="floating-card card-3">
+            <div class="card-icon">✓</div>
+            <div class="card-text">
+              <strong>Grátis</strong>
+              <span>Chopeira inclusa</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

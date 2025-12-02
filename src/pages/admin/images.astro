@@ -35,6 +35,11 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       </div>
     </div>
     
+    <div class="alert-dev" id="dev-alert" style="display: none;">
+      <strong>⚠️ Modo Desenvolvimento</strong>
+      <p>As imagens não são realmente enviadas. Deploy no Cloudflare para upload real.</p>
+    </div>
+    
     <div class="images-grid" id="images-grid">
       <!-- Images will be loaded here -->
     </div>
@@ -51,6 +56,26 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     justify-content: space-between;
     align-items: center;
     margin-bottom: var(--spacing-2xl);
+  }
+  
+  .alert-dev {
+    padding: var(--spacing-md);
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: var(--border-radius);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .alert-dev strong {
+    display: block;
+    color: #ffc107;
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .alert-dev p {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
   }
   
   .upload-area {
@@ -125,6 +150,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     width: 100%;
     height: 200px;
     object-fit: cover;
+    background: rgba(255, 255, 255, 0.05);
   }
   
   .image-info {
@@ -149,6 +175,9 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     background: rgba(255, 255, 255, 0.05);
     border-radius: var(--border-radius);
     font-size: 0.875rem;
+    border: none;
+    color: var(--color-text-primary);
+    cursor: pointer;
   }
   
   .btn-copy:hover {
@@ -164,10 +193,11 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   const uploadProgress = document.getElementById('upload-progress');
   const progressFill = document.getElementById('progress-fill');
   const progressText = document.getElementById('progress-text');
+  const devAlert = document.getElementById('dev-alert');
   
   let uploadedImages: string[] = [];
+  let isDevMode = false;
   
-  // Load existing images from localStorage
   function loadImages() {
     const stored = localStorage.getItem('uploaded_images');
     if (stored) {
@@ -181,7 +211,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     
     imagesGrid.innerHTML = uploadedImages.map(url => `
       <div class="image-card">
-        <img src="${url}" alt="Uploaded image" />
+        <img src="${url}" alt="Uploaded image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23333%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%23666%22 text-anchor=%22middle%22 dy=%22.3em%22%3EImagem%3C/text%3E%3C/svg%3E'" />
         <div class="image-info">
           <div class="image-url">${url}</div>
           <div class="image-actions">
@@ -193,13 +223,35 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       </div>
     `).join('');
     
-    // Add copy functionality
     document.querySelectorAll('.btn-copy').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const url = (e.target as HTMLElement).getAttribute('data-url');
+      btn.addEventListener('click', async (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const url = target.getAttribute('data-url');
         if (url) {
-          navigator.clipboard.writeText(url);
-          alert('URL copiada!');
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(url);
+              const originalText = target.innerHTML;
+              target.innerHTML = '✓ Copiado!';
+              setTimeout(() => {
+                target.innerHTML = originalText;
+              }, 2000);
+            } else {
+              // Fallback para browsers antigos
+              const textArea = document.createElement('textarea');
+              textArea.value = url;
+              textArea.style.position = 'fixed';
+              textArea.style.left = '-999999px';
+              document.body.appendChild(textArea);
+              textArea.select();
+              document.execCommand('copy');
+              document.body.removeChild(textArea);
+              alert('URL copiada!');
+            }
+          } catch (err) {
+            console.error('Erro ao copiar:', err);
+            alert('Erro ao copiar URL. Copie manualmente: ' + url);
+          }
         }
       });
     });
@@ -250,7 +302,6 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       return;
     }
     
-    // Show progress
     const placeholder = uploadArea?.querySelector('.upload-placeholder') as HTMLElement;
     if (placeholder) placeholder.style.display = 'none';
     if (uploadProgress) uploadProgress.style.display = 'block';
@@ -259,7 +310,6 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       const formData = new FormData();
       formData.append('file', file);
       
-      // Simulate progress
       let progress = 0;
       const progressInterval = setInterval(() => {
         progress += 10;
@@ -275,16 +325,22 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       
       clearInterval(progressInterval);
       
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-      
       const data = await response.json();
       
-      if (progressFill) progressFill.style.width = '100%';
-      if (progressText) progressText.textContent = 'Upload completo!';
+      if (!response.ok) {
+        throw new Error(data.details || data.error || 'Upload failed');
+      }
       
-      // Save to localStorage
+      if (progressFill) progressFill.style.width = '100%';
+      
+      if (data.warning) {
+        isDevMode = true;
+        if (devAlert) devAlert.style.display = 'block';
+        if (progressText) progressText.textContent = '⚠️ Mock upload (modo dev)';
+      } else {
+        if (progressText) progressText.textContent = '✓ Upload completo!';
+      }
+      
       uploadedImages.unshift(data.url);
       localStorage.setItem('uploaded_images', JSON.stringify(uploadedImages));
       
@@ -295,11 +351,11 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         if (progressText) progressText.textContent = 'Uploading...';
         
         renderImages();
-      }, 1000);
+      }, 1500);
       
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Erro ao fazer upload. Por favor, tente novamente.');
+      alert(`Erro ao fazer upload: ${error instanceof Error ? error.message : 'Unknown error'}`);
       
       if (placeholder) placeholder.style.display = 'block';
       if (uploadProgress) uploadProgress.style.display = 'none';

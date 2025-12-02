@@ -1,9 +1,9 @@
+# FILE: wrangler.toml
 name = "chopp-delivery"
-main = "dist/_worker.js"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "dist"
 
-# D1 Database
 [[d1_databases]]
 binding = "DB"
 database_name = "chopp_delivery_db"
@@ -12,15 +12,10 @@ database_id = "1c6da776-060b-4cda-82d4-0d34c0641c42"
 [[r2_buckets]]
 binding = "BUCKET"
 bucket_name = "chopp-delivery"
-preview_bucket_name = "chopp-delivery-preview"
 
-# KV Storage
 [[kv_namespaces]]
 binding = "CACHE"
 id = "fb68feaa56914ce8bef612ccfad2f2a8"
-
-[build]
-command = "npm run build"
 
 [vars]
 ENVIRONMENT = "production"

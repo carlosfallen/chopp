@@ -1,4 +1,4 @@
-// FILE: src/lib/db.ts (atualizado para D1)
+// FILE: src/lib/db.ts
 export interface Product {
   id: string;
   name: string;
@@ -20,6 +20,7 @@ export interface Settings {
   facebook: string;
   brandName: string;
   workingHours: string;
+  heroImage: string;
 }
 
 export interface Brand {
@@ -44,6 +45,7 @@ export interface Order {
   customerName: string;
   customerPhone: string;
   customerEmail: string;
+  paymentMethod: string;
   items: Array<{
     productId: string;
     productName: string;
@@ -65,7 +67,6 @@ export class Database {
     this.db = db;
   }
 
-  // Settings
   async getSettings(): Promise<Settings> {
     const results = await this.db.prepare('SELECT key, value FROM settings').all();
     
@@ -91,7 +92,6 @@ export class Database {
     }
   }
 
-  // Products
   async getProducts(): Promise<Product[]> {
     const results = await this.db.prepare(
       'SELECT * FROM products ORDER BY featured DESC, name ASC'
@@ -181,7 +181,6 @@ export class Database {
     await this.db.prepare('DELETE FROM products WHERE id = ?').bind(id).run();
   }
 
-  // Brands
   async getBrands(): Promise<Brand[]> {
     const results = await this.db.prepare(
       'SELECT * FROM brands ORDER BY order_index ASC'
@@ -228,7 +227,6 @@ export class Database {
     await this.db.prepare('DELETE FROM brands WHERE id = ?').bind(id).run();
   }
 
-  // Testimonials
   async getTestimonials(): Promise<Testimonial[]> {
     const results = await this.db.prepare(
       'SELECT * FROM testimonials ORDER BY created_at DESC'
@@ -278,7 +276,6 @@ export class Database {
     await this.db.prepare('DELETE FROM testimonials WHERE id = ?').bind(id).run();
   }
 
-  // Orders
   async getOrders(): Promise<Order[]> {
     const results = await this.db.prepare(
       'SELECT * FROM orders ORDER BY created_at DESC'
@@ -289,6 +286,7 @@ export class Database {
       customerName: row.customer_name,
       customerPhone: row.customer_phone,
       customerEmail: row.customer_email,
+      paymentMethod: row.payment_method,
       items: JSON.parse(row.items),
       total: row.total,
       status: row.status,
@@ -301,14 +299,15 @@ export class Database {
   async createOrder(order: Order): Promise<void> {
     await this.db.prepare(`
       INSERT INTO orders (
-        id, customer_name, customer_phone, customer_email,
+        id, customer_name, customer_phone, customer_email, payment_method,
         items, total, status, delivery_date, address
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       order.id,
       order.customerName,
       order.customerPhone,
       order.customerEmail,
+      order.paymentMethod,
       JSON.stringify(order.items),
       order.total,
       order.status,
@@ -320,7 +319,7 @@ export class Database {
   async updateOrder(order: Order): Promise<void> {
     await this.db.prepare(`
       UPDATE orders SET
-        customer_name = ?, customer_phone = ?, customer_email = ?,
+        customer_name = ?, customer_phone = ?, customer_email = ?, payment_method = ?,
         items = ?, total = ?, status = ?, delivery_date = ?,
         address = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
@@ -328,6 +327,7 @@ export class Database {
       order.customerName,
       order.customerPhone,
       order.customerEmail,
+      order.paymentMethod,
       JSON.stringify(order.items),
       order.total,
       order.status,

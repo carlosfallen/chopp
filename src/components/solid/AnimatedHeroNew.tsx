@@ -1,5 +1,5 @@
-// FILE: src/components/solid/AnimatedHeroNew.tsx (remover variável não usada)
-import { onMount, createSignal } from 'solid-js';
+// FILE: src/components/solid/AnimatedHeroNew.tsx
+import { onMount } from 'solid-js';
 import gsap from 'gsap';
 import './AnimatedHeroNew.css';
 
@@ -129,7 +129,6 @@ export default function AnimatedHeroNew() {
             class="hero-image"
           />
           
-          {/* Floating Cards */}
           <div class="floating-card card-1">
             <div class="card-icon">🍺</div>
             <div class="card-text">

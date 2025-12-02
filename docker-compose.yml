@@ -1,6 +1,4 @@
 # FILE: docker-compose.yml
-version: '3.8'
-
 services:
   app:
     build:
@@ -19,9 +17,6 @@ services:
       - NODE_ENV=development
       - HOST=0.0.0.0
       - PORT=4321
-    command: npm run dev --host
+      - PUBLIC_R2_URL=https://pub-59d8b8edbc6f497984f8a95046b2263b.r2.dev
+    command: npm run dev --host 0.0.0.0
     restart: unless-stopped
-
-networks:
-  chopp-network:
-    driver: bridge

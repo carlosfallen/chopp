@@ -1,5 +1,5 @@
 ---
-// FILE: src/components/CTASection.astro (atualizado)
+// FILE: src/components/CTASection.astro
 import { getSettings } from '../lib/content';
 
 const settings = await getSettings(Astro);
@@ -12,7 +12,7 @@ const whatsappNumber = settings.whatsapp.replace(/\D/g, '');
       <h2>Pronto para brindar com um chopp perfeito?</h2>
       <p>Faça seu pedido agora e garanta a melhor experiência para seu evento</p>
       <div class="cta-actions">
-        <a href={`https://wa.me/${whatsappNumber}?text=Olá!%20Gostaria%20de%20fazer%20um%20pedido`} 
+        <a href={`https://wa.me/55${whatsappNumber}?text=Olá!%20Gostaria%20de%20fazer%20um%20pedido`} 
            class="btn btn-primary btn-lg" target="_blank">
           Pedir pelo WhatsApp
         </a>
