@@ -1,24 +1,42 @@
 // FILE: src/components/shop/Cart.tsx (corrigido)
-import { Show, For } from 'solid-js';
+import { Show, For, createSignal, onMount } from 'solid-js';
 import { cartStore, type CartItem } from '../../store/cart';
 import './Cart.css';
 
 export default function Cart() {
+  const [whatsappNumber, setWhatsappNumber] = createSignal('5511999999999');
+
+  onMount(async () => {
+    try {
+      const response = await fetch('/api/settings');
+      if (response.ok) {
+        const settings = await response.json();
+        if (settings.whatsapp) {
+          // Remove caracteres não numéricos
+          const cleaned = settings.whatsapp.replace(/\D/g, '');
+          setWhatsappNumber('55' + cleaned);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading WhatsApp number:', error);
+    }
+  });
+
   const handleCheckout = () => {
     const items = cartStore.items();
     const total = cartStore.getTotal();
-    
+
     let message = 'Olá! Gostaria de fazer o seguinte pedido:\n\n';
-    
+
     items.forEach(item => {
       message += `${item.quantity}x ${item.name} (${item.liters}L)\n`;
       message += `R$ ${(item.pricePerLiter * item.liters * item.quantity).toFixed(2)}\n\n`;
     });
-    
+
     message += `*Total: R$ ${total.toFixed(2)}*`;
-    
+
     const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/5511999999999?text=${encoded}`, '_blank');
+    window.open(`https://wa.me/${whatsappNumber()}?text=${encoded}`, '_blank');
   };
   
   return (

@@ -228,12 +228,9 @@ export default function ShopContent() {
                 <span>R$ {cartStore.getTotal().toFixed(2)}</span>
               </div>
               <div class="cart-actions">
-                <button class="btn btn-primary btn-block" onClick={() => {
-                  cartStore.closeCart();
-                  setShowCheckout(true);
-                }}>
+                <a href="/checkout" class="btn btn-primary btn-block" style="text-align: center; text-decoration: none; display: block;">
                   Finalizar Pedido
-                </button>
+                </a>
                 <button class="btn btn-secondary btn-block" onClick={() => cartStore.clear()}>
                   Limpar carrinho
                 </button>

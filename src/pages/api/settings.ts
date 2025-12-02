@@ -1,6 +1,8 @@
 // FILE: src/pages/api/settings.ts (corrigido)
 import type { APIRoute } from 'astro';
 
+export const prerender = false;
+
 export const GET: APIRoute = async ({ locals }) => {
   try {
     if (!locals.db) {

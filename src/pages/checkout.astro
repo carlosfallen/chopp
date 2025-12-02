@@ -1,0 +1,500 @@
+---
+// FILE: src/pages/checkout.astro
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Checkout - Finalizar Pedido">
+  <div class="checkout-page">
+    <div class="container">
+      <div class="checkout-header">
+        <a href="/loja" class="back-link">← Voltar para a loja</a>
+        <h1>Finalizar Pedido</h1>
+      </div>
+
+      <div id="checkout-content" class="checkout-content"></div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .checkout-page {
+    min-height: 100vh;
+    background: var(--color-bg-primary);
+    padding: var(--spacing-2xl) 0;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+  }
+
+  .checkout-header {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--color-accent-gold);
+    text-decoration: none;
+    margin-bottom: var(--spacing-md);
+    font-size: 0.875rem;
+    transition: all var(--transition-fast);
+  }
+
+  .back-link:hover {
+    gap: var(--spacing-sm);
+  }
+
+  .checkout-header h1 {
+    font-size: 2rem;
+    margin: 0;
+  }
+
+  .checkout-content {
+    background: var(--color-bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-2xl);
+  }
+
+  .checkout-step {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .checkout-step h2 {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-accent-gold);
+  }
+
+  .form-group {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: 600;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: var(--spacing-sm);
+    background: var(--color-bg-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    color: var(--color-text-primary);
+    font-size: 1rem;
+  }
+
+  .form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .order-summary {
+    background: rgba(212, 175, 55, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .order-summary h3 {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .order-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .order-item:last-child {
+    border-bottom: none;
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-md);
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--color-accent-gold);
+  }
+
+  .payment-status {
+    text-align: center;
+    padding: var(--spacing-2xl);
+  }
+
+  .payment-status-icon {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .payment-status h2 {
+    font-size: 1.75rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-accent-gold);
+  }
+
+  .payment-status p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .payment-methods {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .payment-method-btn {
+    padding: var(--spacing-lg);
+    background: var(--color-bg-primary);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: center;
+  }
+
+  .payment-method-btn:hover {
+    border-color: var(--color-accent-gold);
+    transform: translateY(-2px);
+  }
+
+  .payment-method-btn.selected {
+    border-color: var(--color-accent-gold);
+    background: rgba(212, 175, 55, 0.1);
+  }
+
+  .payment-method-btn .icon {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .payment-method-btn .label {
+    display: block;
+    font-size: 0.875rem;
+  }
+
+  .empty-cart {
+    text-align: center;
+    padding: var(--spacing-2xl);
+    color: var(--color-text-muted);
+  }
+
+  .btn-block {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 1.125rem;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--color-accent-gold);
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+
+<script>
+  interface CartItem {
+    id: string;
+    name: string;
+    category: string;
+    description: string;
+    pricePerLiter: number;
+    liters: number;
+    image: string;
+    quantity: number;
+  }
+
+  let currentStep: 'form' | 'payment' | 'waiting' | 'success' = 'form';
+  let orderData: any = null;
+
+  function loadCart(): CartItem[] {
+    const stored = localStorage.getItem('chopp-cart');
+    return stored ? JSON.parse(stored) : [];
+  }
+
+  function clearCart() {
+    localStorage.setItem('chopp-cart', JSON.stringify([]));
+  }
+
+  function calculateTotal(items: CartItem[]): number {
+    return items.reduce((sum, item) =>
+      sum + (item.pricePerLiter * item.liters * item.quantity), 0
+    );
+  }
+
+  function renderCheckoutForm(items: CartItem[]) {
+    const total = calculateTotal(items);
+
+    return `
+      <div class="checkout-step">
+        <h2>📦 Resumo do Pedido</h2>
+        <div class="order-summary">
+          ${items.map(item => `
+            <div class="order-item">
+              <span>${item.quantity}x ${item.name} (${item.liters}L)</span>
+              <span>R$ ${(item.pricePerLiter * item.liters * item.quantity).toFixed(2)}</span>
+            </div>
+          `).join('')}
+          <div class="order-item">
+            <strong>Total</strong>
+            <strong>R$ ${total.toFixed(2)}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="checkout-step">
+        <h2>👤 Seus Dados</h2>
+        <form id="checkout-form">
+          <div class="form-group">
+            <label>Nome Completo *</label>
+            <input type="text" id="customer-name" required />
+          </div>
+
+          <div class="form-group">
+            <label>Telefone (WhatsApp) *</label>
+            <input type="tel" id="customer-phone" placeholder="(11) 99999-9999" required />
+          </div>
+
+          <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" id="customer-email" />
+          </div>
+
+          <div class="form-group">
+            <label>Endereço de Entrega</label>
+            <textarea id="customer-address" placeholder="Rua, número, complemento, bairro, cidade"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Data da Festa (opcional)</label>
+            <input type="date" id="delivery-date" />
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">
+            Continuar para Pagamento →
+          </button>
+        </form>
+      </div>
+    `;
+  }
+
+  function renderPaymentMethod() {
+    return `
+      <div class="checkout-step">
+        <h2>💳 Forma de Pagamento</h2>
+        <div class="payment-methods">
+          <button class="payment-method-btn" data-method="pix">
+            <div class="icon">📱</div>
+            <div class="label">PIX</div>
+          </button>
+          <button class="payment-method-btn" data-method="credit">
+            <div class="icon">💳</div>
+            <div class="label">Crédito</div>
+          </button>
+          <button class="payment-method-btn" data-method="debit">
+            <div class="icon">💳</div>
+            <div class="label">Débito</div>
+          </button>
+          <button class="payment-method-btn" data-method="cash">
+            <div class="icon">💵</div>
+            <div class="label">Dinheiro</div>
+          </button>
+        </div>
+        <button id="back-to-form" class="btn btn-secondary btn-block" style="margin-bottom: var(--spacing-sm)">
+          ← Voltar
+        </button>
+      </div>
+    `;
+  }
+
+  function renderWaitingPayment() {
+    return `
+      <div class="payment-status">
+        <div class="payment-status-icon">⏳</div>
+        <h2>Aguardando Pagamento</h2>
+        <p>Seu pedido foi registrado! Aguarde a confirmação do pagamento.</p>
+        <p><strong>Número do Pedido:</strong> #${orderData.id}</p>
+        <div style="margin: var(--spacing-xl) 0;">
+          <div class="spinner"></div>
+        </div>
+        <p style="color: var(--color-text-muted); font-size: 0.875rem;">
+          Você receberá uma confirmação por WhatsApp em breve.
+        </p>
+        <button id="finish-order" class="btn btn-primary btn-block">
+          Ver Meus Pedidos
+        </button>
+      </div>
+    `;
+  }
+
+  function renderSuccess() {
+    return `
+      <div class="payment-status">
+        <div class="payment-status-icon">✅</div>
+        <h2>Pedido Confirmado!</h2>
+        <p>Obrigado pela sua compra!</p>
+        <p><strong>Número do Pedido:</strong> #${orderData.id}</p>
+        <a href="/loja" class="btn btn-primary btn-block">
+          Voltar para a Loja
+        </a>
+      </div>
+    `;
+  }
+
+  function render() {
+    const content = document.getElementById('checkout-content');
+    if (!content) return;
+
+    const items = loadCart();
+
+    if (items.length === 0) {
+      content.innerHTML = `
+        <div class="empty-cart">
+          <p>Seu carrinho está vazio</p>
+          <a href="/loja" class="btn btn-primary">Ir para a Loja</a>
+        </div>
+      `;
+      return;
+    }
+
+    if (currentStep === 'form') {
+      content.innerHTML = renderCheckoutForm(items);
+      setupFormListeners();
+    } else if (currentStep === 'payment') {
+      content.innerHTML = renderPaymentMethod();
+      setupPaymentListeners();
+    } else if (currentStep === 'waiting') {
+      content.innerHTML = renderWaitingPayment();
+      setupWaitingListeners();
+    } else if (currentStep === 'success') {
+      content.innerHTML = renderSuccess();
+    }
+  }
+
+  function setupFormListeners() {
+    const form = document.getElementById('checkout-form') as HTMLFormElement;
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = (document.getElementById('customer-name') as HTMLInputElement).value;
+      const phone = (document.getElementById('customer-phone') as HTMLInputElement).value;
+      const email = (document.getElementById('customer-email') as HTMLInputElement).value;
+      const address = (document.getElementById('customer-address') as HTMLTextAreaElement).value;
+      const deliveryDate = (document.getElementById('delivery-date') as HTMLInputElement).value;
+
+      if (!name || !phone) {
+        alert('Por favor, preencha nome e telefone');
+        return;
+      }
+
+      orderData = {
+        customerName: name,
+        customerPhone: phone,
+        customerEmail: email,
+        address: address,
+        deliveryDate: deliveryDate || null
+      };
+
+      currentStep = 'payment';
+      render();
+    });
+  }
+
+  function setupPaymentListeners() {
+    document.querySelectorAll('.payment-method-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const method = (e.currentTarget as HTMLElement).getAttribute('data-method');
+        if (!method) return;
+
+        // Visual feedback
+        document.querySelectorAll('.payment-method-btn').forEach(b => b.classList.remove('selected'));
+        (e.currentTarget as HTMLElement).classList.add('selected');
+
+        // Create order
+        await createOrder(method);
+      });
+    });
+
+    document.getElementById('back-to-form')?.addEventListener('click', () => {
+      currentStep = 'form';
+      render();
+    });
+  }
+
+  function setupWaitingListeners() {
+    document.getElementById('finish-order')?.addEventListener('click', () => {
+      window.location.href = '/loja';
+    });
+
+    // Simular aprovação de pagamento após 3 segundos
+    setTimeout(() => {
+      currentStep = 'success';
+      render();
+      clearCart();
+    }, 3000);
+  }
+
+  async function createOrder(paymentMethod: string) {
+    const items = loadCart();
+    const total = calculateTotal(items);
+
+    const order = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      customerName: orderData.customerName,
+      customerPhone: orderData.customerPhone,
+      customerEmail: orderData.customerEmail,
+      paymentMethod: paymentMethod,
+      items: items.map(item => ({
+        productId: item.id,
+        productName: item.name,
+        liters: item.liters,
+        quantity: item.quantity,
+        price: item.pricePerLiter * item.liters * item.quantity
+      })),
+      total: total,
+      status: 'pending' as const,
+      createdAt: new Date().toISOString(),
+      deliveryDate: orderData.deliveryDate,
+      address: orderData.address
+    };
+
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(order)
+      });
+
+      if (!response.ok) throw new Error('Erro ao criar pedido');
+
+      orderData.id = order.id;
+      currentStep = 'waiting';
+      render();
+    } catch (error) {
+      console.error('Error creating order:', error);
+      alert('Erro ao criar pedido. Tente novamente.');
+    }
+  }
+
+  // Initialize
+  render();
+</script>
+</Layout>
