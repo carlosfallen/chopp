@@ -77,6 +77,11 @@
   margin-bottom: var(--spacing-2xl);
 }
 
+.hero-cta-group .btn-hero {
+  opacity: 1;
+  transform: none;
+}
+
 .btn-hero {
   display: flex;
   align-items: center;
@@ -158,12 +163,13 @@
 
 .hero-image-wrapper {
   position: relative;
-  width: 110%;
-  height: 110vh;
-  max-width: none;
-  margin-right: -10%;
+  width: 90%;           /* antes 110% */
+  max-width: 600px;     /* limite de largura, ajustável */
+  height: auto;         /* deixa a altura acompanhar a imagem */
+  margin-right: 0;      /* tira o -10% que jogava pra fora */
   overflow: visible;
 }
+
 
 .image-glow {
   position: absolute;
@@ -213,19 +219,19 @@
 }
 
 .card-1 {
-  top: 10%;
-  right: -10%;
+  top: 2%;
+  right: -20%;
 }
 
 .card-2 {
-  top: 50%;
-  left: -10%;
+  top: 55%;
+  left: -14%;
   transform: translateY(-50%);
 }
 
 .card-3 {
-  bottom: 10%;
-  right: -5%;
+  bottom: 0;
+  right: -16%;
 }
 
 .card-icon {

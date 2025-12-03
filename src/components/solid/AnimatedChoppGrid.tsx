@@ -1,6 +1,6 @@
 import { onMount } from 'solid-js';
 import gsap from 'gsap';
-import * as anime from 'animejs';
+import { animate, stagger } from 'animejs';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { products } from '../../data/products';
 import './AnimatedChoppGrid.css';
@@ -14,79 +14,85 @@ export default function AnimatedChoppGrid() {
 
   const featuredProducts = products.slice(0, 6);
 
-  onMount(() => {
-    if (!containerRef) return;
+onMount(() => {
+  if (!containerRef) return;
 
-    // Animação inicial com ScrollTrigger + anime.js
-    ScrollTrigger.create({
-      trigger: containerRef,
-      start: 'top 75%',
-      onEnter: () => {
-        // Animação dos cards
-        anime({
-          targets: containerRef!.children,
-          translateY: [100, 0],
-          opacity: [0, 1],
-          scale: [0.9, 1],
-          delay: anime.stagger(100),
-          duration: 900,
-          easing: 'easeOutExpo'
-        });
+  // Animação inicial com ScrollTrigger + Anime.js v4
+  ScrollTrigger.create({
+    trigger: containerRef,
+    start: 'top 75%',
+    onEnter: () => {
+      const cards = Array.from(containerRef!.children);
 
-        // Animação das categorias
-        anime({
-          targets: '.chopp-category',
-          translateX: [-50, 0],
+      // Animação dos cards
+      animate(cards, {
+        y: [100, 0],          // antes: translateY: [100, 0]
+        opacity: [0, 1],
+        scale: [0.9, 1],
+        delay: stagger(100),  // antes: anime.stagger(100)
+        duration: 900,
+        ease: 'outExpo',      // antes: easing: 'easeOutExpo'
+      });
+
+      // Animação das categorias
+      const categories = containerRef!.querySelectorAll('.chopp-category');
+      if (categories.length) {
+        animate(categories, {
+          x: [-50, 0],                       // antes: translateX: [-50, 0]
           opacity: [0, 1],
-          delay: anime.stagger(100, { start: 300 }),
+          delay: stagger(100, { start: 300 }),
           duration: 600,
-          easing: 'easeOutQuad'
-        });
-
-        // Animação dos botões
-        anime({
-          targets: '.btn-sm',
-          scale: [0, 1],
-          delay: anime.stagger(100, { start: 600 }),
-          duration: 400,
-          easing: 'easeOutBack'
+          ease: 'outQuad',                   // antes: 'easeOutQuad'
         });
       }
+
+      // Animação dos botões
+      const buttons = containerRef!.querySelectorAll('.btn-sm');
+      if (buttons.length) {
+        animate(buttons, {
+          scale: [0, 1],
+          delay: stagger(100, { start: 600 }),
+          duration: 400,
+          ease: 'outBack',                   // antes: 'easeOutBack'
+        });
+      }
+    },
+  });
+
+  // Hover effects com Anime.js v4
+  const cards = Array.from(containerRef.children);
+  cards.forEach((card) => {
+    card.addEventListener('mouseenter', () => {
+      animate(card, {
+        y: -12, // antes: translateY: -12
+        boxShadow: '0 20px 40px rgba(212, 175, 55, 0.3)',
+        duration: 300,
+        ease: 'outQuad', // antes: 'easeOutQuad'
+      });
     });
 
-    // Hover effects com anime.js
-    const cards = containerRef.children;
-    Array.from(cards).forEach((card: any) => {
-      card.addEventListener('mouseenter', () => {
-        anime({
-          targets: card,
-          translateY: -12,
-          boxShadow: '0 20px 40px rgba(212, 175, 55, 0.3)',
-          duration: 300,
-          easing: 'easeOutQuad'
-        });
+    card.addEventListener('mouseleave', () => {
+      animate(card, {
+        y: 0,
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
+        duration: 300,
+        ease: 'outQuad',
       });
-
-      card.addEventListener('mouseleave', () => {
-        anime({
-          targets: card,
-          translateY: 0,
-          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
-          duration: 300,
-          easing: 'easeOutQuad'
-        });
-      });
-    });
-
-    // Animação suave dos ícones de chopp
-    anime({
-      targets: '.chopp-image-placeholder',
-      rotate: [0, 360],
-      duration: 20000,
-      easing: 'linear',
-      loop: true
     });
   });
+
+  // Animação suave dos ícones de chopp (loop)
+  const placeholders = containerRef.querySelectorAll('.chopp-image-placeholder');
+  if (placeholders.length) {
+    animate(placeholders, {
+      rotate: [0, 360],
+      duration: 20000,
+      ease: 'linear',
+      loop: true,
+    });
+  }
+});
+
 
   return (
     <div class="chopp-grid" ref={containerRef}>

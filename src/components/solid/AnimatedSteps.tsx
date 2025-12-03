@@ -1,6 +1,6 @@
 import { onMount } from 'solid-js';
 import gsap from 'gsap';
-import * as anime from 'animejs';
+import { animate, stagger } from 'animejs';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import './AnimatedSteps.css';
 
@@ -33,69 +33,72 @@ export default function AnimatedSteps() {
       description: 'Aproveite chopp gelado de bar na sua casa'
     }
   ];
+onMount(() => {
+  if (!containerRef) return;
 
-  onMount(() => {
-    if (!containerRef) return;
+  // Animação inicial com GSAP ScrollTrigger
+  ScrollTrigger.create({
+    trigger: containerRef,
+    start: 'top 80%',
+    onEnter: () => {
+      const children = Array.from(containerRef!.children);
 
-    // Animação inicial com GSAP ScrollTrigger
-    ScrollTrigger.create({
-      trigger: containerRef,
-      start: 'top 80%',
-      onEnter: () => {
-        // Animação dos cards com anime.js
-        anime({
-          targets: containerRef!.children,
-          translateY: [80, 0],
-          opacity: [0, 1],
-          delay: anime.stagger(150),
-          duration: 800,
-          easing: 'easeOutCubic'
-        });
-
-        // Animação dos ícones
-        anime({
-          targets: '.step-icon',
-          scale: [0, 1],
-          rotate: [45, 0],
-          delay: anime.stagger(150, { start: 400 }),
-          duration: 600,
-          easing: 'easeOutBack'
-        });
-
-        // Animação dos números
-        anime({
-          targets: '.step-number',
-          scale: [0, 1],
-          opacity: [0, 1],
-          delay: anime.stagger(150, { start: 200 }),
-          duration: 500,
-          easing: 'easeOutElastic(1, .6)'
-        });
-      }
-    });
-
-    // Hover animation com anime.js
-    const cards = containerRef.children;
-    Array.from(cards).forEach((card: any) => {
-      card.addEventListener('mouseenter', () => {
-        anime({
-          targets: card,
-          scale: 1.05,
-          duration: 300,
-          easing: 'easeOutQuad'
-        });
+      // Animação dos cards (antes: anime({ targets: containerRef!.children, ... }))
+      animate(children, {
+        translateY: [80, 0],
+        opacity: [0, 1],
+        delay: stagger(150),
+        duration: 800,
+        ease: 'outCubic', // antes: easing: 'easeOutCubic'
       });
 
-      card.addEventListener('mouseleave', () => {
-        anime({
-          targets: card,
-          scale: 1,
-          duration: 300,
-          easing: 'easeOutQuad'
+      // Animação dos ícones (antes: targets: '.step-icon')
+      const icons = containerRef!.querySelectorAll('.step-icon');
+      if (icons.length) {
+        animate(icons, {
+          scale: [0, 1],
+          rotate: [45, 0],
+          delay: stagger(150, { start: 400 }),
+          duration: 600,
+          ease: 'outBack', // antes: 'easeOutBack'
         });
+      }
+
+      // Animação dos números
+      const numbers = containerRef!.querySelectorAll('.step-number');
+      if (numbers.length) {
+        animate(numbers, {
+          scale: [0, 1],
+          opacity: [0, 1],
+          delay: stagger(150, { start: 200 }),
+          duration: 500,
+          ease: 'outElastic(1, .6)', // antes: 'easeOutElastic(1, .6)'
+        });
+      }
+    },
+  });
+
+  // Hover animation com Anime.js v4
+  const cards = Array.from(containerRef.children);
+
+  cards.forEach((card) => {
+    card.addEventListener('mouseenter', () => {
+      animate(card, {
+        scale: 1.05,
+        duration: 300,
+        ease: 'outQuad', // antes: 'easeOutQuad'
+      });
+    });
+
+    card.addEventListener('mouseleave', () => {
+      animate(card, {
+        scale: 1,
+        duration: 300,
+        ease: 'outQuad',
       });
     });
   });
+});
 
   return (
     <div class="steps-grid" ref={containerRef}>

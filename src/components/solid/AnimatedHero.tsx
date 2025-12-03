@@ -1,7 +1,8 @@
 // FILE: src/components/solid/AnimatedHero.tsx
 import { onMount } from 'solid-js';
 import gsap from 'gsap';
-import * as anime from 'animejs';
+import { animate, stagger  } from "animejs"
+
 import './AnimatedHero.css';
 
 export default function AnimatedHero() {
@@ -33,45 +34,59 @@ export default function AnimatedHero() {
       opacity: 0,
       duration: 0.7
     }, '-=0.4')
-    .from(ctaRef?.children || [], {
-      y: 30,
-      scale: 0.9,
-      opacity: 0,
-      duration: 0.6,
-      stagger: 0.15
-    }, '-=0.3');
+    .fromTo(
+      ctaRef?.children || [],
+      {
+        y: 30,
+        scale: 0.9,
+        opacity: 0
+      },
+      {
+        y: 0,
+        scale: 1,
+        opacity: 1,
+        duration: 0.6,
+        stagger: 0.15,
+        clearProps: 'all' // remove inline styles so CTA fica visível mesmo se animação falhar depois
+      },
+      '-=0.3'
+    );
 
-    // Animação da imagem com anime.js
-    anime({
-      targets: rightPaneRef,
-      translateX: [100, 0],
+// Animação da imagem com animejs v4 (animate)
+
+if (rightPaneRef) {
+  animate(rightPaneRef, {
+    translateX: [100, 0],
+    opacity: [0, 1],
+    duration: 1000,
+    easing: 'easeOutExpo',
+    delay: 400
+  });
+}
+
+if (imageRef) {
+  animate(imageRef, {
+    scale: [1.2, 1],
+    opacity: [0, 1],
+    duration: 1500,
+    easing: 'easeOutCubic',
+    delay: 600
+  });
+}
+const cards = rightPaneRef?.querySelectorAll('.floating-card');
+// Animação dos floating cards
+if (rightPaneRef) {
+  const cards = rightPaneRef.querySelectorAll('.floating-card');
+  if (cards.length > 0) {
+    animate(cards, {
+      translateY: [-100, 0],
       opacity: [0, 1],
-      duration: 1000,
-      easing: 'easeOutExpo',
-      delay: 400
+      duration: 800,
+      delay: stagger(200, { start: 1200 }),
+      easing: 'spring(1, 80, 10, 0)'
     });
-
-    anime({
-      targets: imageRef,
-      scale: [1.2, 1],
-      opacity: [0, 1],
-      duration: 1500,
-      easing: 'easeOutCubic',
-      delay: 600
-    });
-
-    // Animação dos floating cards
-    const cards = rightPaneRef?.querySelectorAll('.floating-card');
-    if (cards) {
-      anime({
-        targets: cards,
-        translateY: [-50, 0],
-        opacity: [0, 1],
-        duration: 800,
-        delay: anime.stagger(200, { start: 1200 }),
-        easing: 'spring(1, 80, 10, 0)'
-      });
-    }
+  }
+}
 
     // Parallax com mouse
     const handleMouseMove = (e: MouseEvent) => {
@@ -103,18 +118,17 @@ export default function AnimatedHero() {
 
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Floating animation contínua nos cards
-    if (cards) {
-      cards.forEach((card, index) => {
-        anime({
-          targets: card,
-          translateY: [0, -10, 0],
-          duration: 3000 + (index * 500),
-          easing: 'easeInOutSine',
-          loop: true
-        });
-      });
-    }
+// Floating animation contínua nos cards (Anime.js v4)
+if (cards && cards.length > 0) {
+  cards.forEach((card, index) => {
+    animate(card, {
+      translateY: [0, -10, 0, 10, 0], // leve "flutuação"
+      duration: 3000 + index * 500,
+      ease: 'inOutSine',              // antes: 'easeInOutSine'
+      loop: true                      // loop infinito
+    });
+  });
+}
 
     return () => window.removeEventListener('mousemove', handleMouseMove);
   });
@@ -123,11 +137,6 @@ export default function AnimatedHero() {
     <div class="hero-container" ref={containerRef}>
       <div class="hero-left-pane" ref={leftPaneRef}>
         <div class="hero-content-wrapper">
-          <div class="hero-badge">
-            <span class="badge-icon">🏆</span>
-            <span>Melhor Chopp Delivery 2024</span>
-          </div>
-
           <h1 ref={titleRef} class="hero-title">
             <span class="title-line">Chopp de Bar</span>
             <span class="title-line highlight">Na Sua Casa</span>
@@ -175,7 +184,7 @@ export default function AnimatedHero() {
           <div class="image-glow"></div>
           <img
             ref={imageRef}
-            src="https://images.unsplash.com/photo-1608270586620-248524c67de9?w=1200&q=80"
+            src="https://pub-59d8b8edbc6f497984f8a95046b2263b.r2.dev/1764702094867-barril_50l.png"
             alt="Chopeira profissional servindo chopp gelado"
             class="hero-image"
           />
