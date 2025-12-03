@@ -18,22 +18,19 @@ export default function AnimatedExperience() {
     {
       title: 'Chopeira servindo pint cremoso',
       description: 'Close em copo sendo preenchido com espuma cremosa direto da torneira.',
-      src: 'https://filesamples.com/samples/video/mp4/sample_5s.mp4',
-      poster: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80',
+      src: 'https://videocdn.cdnpk.net/videos/55817ebb-69b1-4316-8c62-4257f317f7a3/horizontal/previews/clear/large.mp4?token=exp=1764801087~hmac=8e711a41b59a05f81cfaaaecd34e1215cb773d8a5c1be1e6af3545bbdfe821e3',
       accent: '#FFB800'
     },
     {
       title: 'Fluxo perfeito na torre',
       description: 'Barril regulado gelando o chopp enquanto a torneira abre o fluxo.',
-      src: 'https://samplelib.com/lib/preview/mp4/sample-10s.mp4',
-      poster: 'https://images.unsplash.com/photo-1544145945-f90425340c7b?auto=format&fit=crop&w=1200&q=80',
+      src: 'https://videocdn.cdnpk.net/videos/5373f6af-ecb4-4e85-8772-cbc93d02b8ff/horizontal/previews/clear/large.mp4?token=exp=1764799869~hmac=151b2e10bf779c4dbb6d5a0798d2991eb73d076eecf53b971d2c6ea36d58c40d',
       accent: '#FF6B35'
     },
     {
       title: 'Tap duplo para eventos',
       description: 'Dois taps atendendo convidados ao mesmo tempo, sem fila.',
-      src: 'https://samplelib.com/lib/preview/mp4/sample-15s.mp4',
-      poster: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80',
+      src: 'https://videocdn.cdnpk.net/videos/9cc7aa47-4a75-5576-88e1-ca2d6720a8f3/horizontal/previews/clear/large.mp4?token=exp=1764799818~hmac=1a865bf9e464dbe234dd56caf66292e6684131b2ef7b8d878c6d2cc85ff333d7',
       accent: '#4ECDC4'
     }
   ];
@@ -142,7 +139,6 @@ export default function AnimatedExperience() {
                       muted
                       loop
                       preload="auto"
-                      poster={video.poster}
                       class="video-element"
                     >
                       <source src={video.src} type="video/mp4" />

@@ -50,10 +50,6 @@ export default function ProductCard(props: { product: Product }) {
           ))}
         </div>
         
-        <div class="product-price">
-          R$ {(props.product.pricePerLiter * selectedSize()).toFixed(2)}
-        </div>
-        
         <button class="btn btn-primary add-to-cart" onClick={handleAddToCart}>
           Adicionar ao carrinho
         </button>

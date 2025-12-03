@@ -419,3 +419,13 @@
     max-width: 100%;
   }
 }
+
+.product-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.product-actions {
+  padding: 0 var(--spacing-md) var(--spacing-md);
+}

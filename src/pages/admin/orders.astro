@@ -1,5 +1,5 @@
 ---
-// FILE: src/pages/admin/orders.astro (atualizado com funcionalidade)
+// FILE: src/pages/admin/orders.astro (melhorado)
 import AdminLayout from '../../layouts/AdminLayout.astro';
 ---
 
@@ -10,19 +10,63 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         <h1>Pedidos</h1>
         <p>Acompanhe e gerencie os pedidos recebidos</p>
       </div>
-      <div class="filter-buttons">
-        <button class="btn btn-secondary btn-sm filter-status" data-status="all">Todos</button>
-        <button class="btn btn-secondary btn-sm filter-status" data-status="pending">Pendentes</button>
-        <button class="btn btn-secondary btn-sm filter-status" data-status="confirmed">Confirmados</button>
-        <button class="btn btn-secondary btn-sm filter-status" data-status="delivered">Entregues</button>
+      <div class="header-actions">
+        <div class="filter-buttons">
+          <button class="btn btn-secondary btn-sm filter-status active" data-status="all">
+            Todos <span class="badge" id="badge-all">0</span>
+          </button>
+          <button class="btn btn-secondary btn-sm filter-status" data-status="pending">
+            Pendentes <span class="badge pending" id="badge-pending">0</span>
+          </button>
+          <button class="btn btn-secondary btn-sm filter-status" data-status="confirmed">
+            Confirmados <span class="badge confirmed" id="badge-confirmed">0</span>
+          </button>
+          <button class="btn btn-secondary btn-sm filter-status" data-status="delivered">
+            Entregues <span class="badge delivered" id="badge-delivered">0</span>
+          </button>
+          <button class="btn btn-secondary btn-sm filter-status" data-status="cancelled">
+            Cancelados <span class="badge cancelled" id="badge-cancelled">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div class="stat-content">
+          <div class="stat-label">Total de Pedidos</div>
+          <div class="stat-value" id="total-orders">0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-content">
+          <div class="stat-label">Faturamento Total</div>
+          <div class="stat-value" id="total-revenue">R$ 0,00</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-content">
+          <div class="stat-label">Pedidos Pendentes</div>
+          <div class="stat-value" id="pending-count">0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+          <div class="stat-label">Pedidos Entregues</div>
+          <div class="stat-value" id="delivered-count">0</div>
+        </div>
       </div>
     </div>
     
-    <div class="orders-table">
-      <table>
+    <div class="orders-table-container">
+      <table class="orders-table">
         <thead>
           <tr>
-            <th>#</th>
+            <th>ID</th>
             <th>Cliente</th>
             <th>Data</th>
             <th>Produtos</th>
@@ -32,7 +76,11 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
           </tr>
         </thead>
         <tbody id="orders-tbody">
-          <!-- Orders will be loaded here -->
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 3rem; color: var(--color-text-muted);">
+              Carregando pedidos...
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -48,7 +96,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       
       <div class="modal-body">
         <div class="order-section">
-          <h3>Informações do Cliente</h3>
+          <h3>📋 Informações do Cliente</h3>
           <div class="info-grid">
             <div class="info-item">
               <strong>Nome:</strong>
@@ -59,24 +107,28 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
               <span id="customer-phone"></span>
             </div>
             <div class="info-item">
-              <strong>E-mail:</strong>
-              <span id="customer-email"></span>
+              <strong>Endereço:</strong>
+              <span id="customer-address"></span>
+            </div>
+            <div class="info-item">
+              <strong>Data do Pedido:</strong>
+              <span id="order-date"></span>
             </div>
           </div>
         </div>
         
         <div class="order-section">
-          <h3>Produtos</h3>
+          <h3>🍺 Produtos</h3>
           <div id="order-items"></div>
         </div>
         
         <div class="order-section">
-          <h3>Status do Pedido</h3>
+          <h3>📊 Status do Pedido</h3>
           <select id="order-status" class="status-select">
-            <option value="pending">Pendente</option>
-            <option value="confirmed">Confirmado</option>
-            <option value="delivered">Entregue</option>
-            <option value="cancelled">Cancelado</option>
+            <option value="pending">⏳ Pendente</option>
+            <option value="confirmed">✓ Confirmado</option>
+            <option value="delivered">✅ Entregue</option>
+            <option value="cancelled">❌ Cancelado</option>
           </select>
         </div>
         
@@ -87,7 +139,10 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         
         <div class="modal-actions">
           <button class="btn btn-secondary" id="cancel-btn">Fechar</button>
-          <button class="btn btn-primary" id="save-order-btn">Salvar Alterações</button>
+          <button class="btn btn-primary" id="save-order-btn">💾 Salvar Alterações</button>
+          <a class="btn btn-success" id="whatsapp-btn" target="_blank" style="background: #25D366;">
+            📱 Enviar WhatsApp
+          </a>
         </div>
       </div>
     </div>
@@ -100,12 +155,11 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   }
   
   .content-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     margin-bottom: var(--spacing-2xl);
-    flex-wrap: wrap;
-    gap: var(--spacing-md);
+  }
+
+  .header-actions {
+    margin-top: var(--spacing-md);
   }
   
   .filter-buttons {
@@ -113,20 +167,96 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     gap: var(--spacing-xs);
     flex-wrap: wrap;
   }
+
+  .filter-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .badge.pending {
+    background: rgba(255, 193, 7, 0.3);
+    color: #ffc107;
+  }
+
+  .badge.confirmed {
+    background: rgba(0, 123, 255, 0.3);
+    color: #007bff;
+  }
+
+  .badge.delivered {
+    background: rgba(40, 167, 69, 0.3);
+    color: #28a745;
+  }
+
+  .badge.cancelled {
+    background: rgba(220, 53, 69, 0.3);
+    color: #dc3545;
+  }
   
   .filter-status.active {
     background: var(--color-accent-gold);
     color: var(--color-bg-primary);
   }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-xl);
+    background: var(--color-bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius-lg);
+  }
+
+  .stat-icon {
+    font-size: 2.5rem;
+  }
+
+  .stat-content {
+    flex: 1;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--color-accent-gold);
+  }
   
-  .orders-table {
+  .orders-table-container {
     background: var(--color-bg-secondary);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: var(--border-radius-lg);
     overflow-x: auto;
   }
   
-  table {
+  .orders-table {
     width: 100%;
     border-collapse: collapse;
   }
@@ -141,6 +271,9 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     font-weight: 600;
     color: var(--color-accent-gold);
     background: rgba(255, 255, 255, 0.02);
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
   
   td {
@@ -148,11 +281,12 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   }
   
   .status-badge {
-    padding: 4px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
+    display: inline-block;
   }
   
   .status-badge.pending {
@@ -176,23 +310,25 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   }
   
   .btn-icon {
-    padding: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
     background: rgba(255, 255, 255, 0.05);
     border-radius: var(--border-radius);
     margin: 0 4px;
-    font-size: 1rem;
+    font-size: 1.125rem;
     border: none;
     cursor: pointer;
+    transition: all 0.3s ease;
   }
   
   .btn-icon:hover {
     background: rgba(212, 175, 55, 0.2);
+    transform: scale(1.1);
   }
   
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -201,7 +337,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   }
   
   .modal-large {
-    max-width: 800px;
+    max-width: 900px;
   }
   
   .modal-content {
@@ -231,6 +367,13 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     border: none;
     border-radius: 50%;
     font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .modal-close:hover {
+    background: rgba(220, 53, 69, 0.2);
+    transform: rotate(90deg);
   }
   
   .modal-body {
@@ -242,9 +385,15 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     padding-bottom: var(--spacing-xl);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
+
+  .order-section:last-of-type {
+    border-bottom: none;
+  }
   
   .order-section h3 {
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-accent-gold);
+    font-size: 1.25rem;
   }
   
   .info-grid {
@@ -256,54 +405,118 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   .info-item {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
+    padding: var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--border-radius);
   }
   
   .info-item strong {
     color: var(--color-text-muted);
     font-size: 0.875rem;
   }
+
+  .info-item span {
+    color: var(--color-text-primary);
+    font-size: 1rem;
+  }
   
   .status-select {
     width: 100%;
-    padding: var(--spacing-sm);
+    padding: var(--spacing-md);
     background: var(--color-bg-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--border-radius);
     color: var(--color-text-primary);
     font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .status-select:focus {
+    outline: none;
+    border-color: var(--color-accent-gold);
   }
   
   .order-total {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
     background: rgba(212, 175, 55, 0.1);
-    border-radius: var(--border-radius);
-    font-size: 1.25rem;
-    margin-bottom: var(--spacing-lg);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: var(--border-radius-lg);
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-xl);
   }
   
   .order-total span {
     color: var(--color-accent-gold);
-    font-weight: 700;
+    font-weight: 800;
+    font-size: 2rem;
   }
   
   .modal-actions {
     display: flex;
     gap: var(--spacing-sm);
+    flex-wrap: wrap;
   }
   
-  .modal-actions button {
+  .modal-actions button,
+  .modal-actions a {
     flex: 1;
+    min-width: 150px;
   }
   
   .order-item {
-    padding: var(--spacing-sm);
-    background: rgba(255, 255, 255, 0.02);
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: var(--border-radius);
-    margin-bottom: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .order-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .btn-success {
+    background: #25D366 !important;
+    color: #fff;
+    text-decoration: none;
+    display: inline-flex;
+  }
+
+  .btn-success:hover {
+    background: #128C7E !important;
+  }
+
+  @media (max-width: 768px) {
+    .stats-row {
+      grid-template-columns: 1fr;
+    }
+
+    .filter-buttons {
+      width: 100%;
+    }
+
+    .filter-status {
+      flex: 1;
+      justify-content: center;
+    }
+
+    .modal-actions {
+      flex-direction: column;
+    }
+
+    .modal-actions button,
+    .modal-actions a {
+      width: 100%;
+    }
   }
 </style>
 
@@ -317,10 +530,39 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       const response = await fetch('/api/orders');
       const data = await response.json();
       orders = data.orders || [];
+      updateStats();
+      updateBadges();
       renderOrders();
     } catch (error) {
       console.error('Error loading orders:', error);
     }
+  }
+
+  function updateStats() {
+    const total = orders.length;
+    const revenue = orders.reduce((sum, o) => sum + o.total, 0);
+    const pending = orders.filter(o => o.status === 'pending').length;
+    const delivered = orders.filter(o => o.status === 'delivered').length;
+
+    document.getElementById('total-orders')!.textContent = total.toString();
+    document.getElementById('total-revenue')!.textContent = `R$ ${revenue.toFixed(2)}`;
+    document.getElementById('pending-count')!.textContent = pending.toString();
+    document.getElementById('delivered-count')!.textContent = delivered.toString();
+  }
+
+  function updateBadges() {
+    const counts = {
+      all: orders.length,
+      pending: orders.filter(o => o.status === 'pending').length,
+      confirmed: orders.filter(o => o.status === 'confirmed').length,
+      delivered: orders.filter(o => o.status === 'delivered').length,
+      cancelled: orders.filter(o => o.status === 'cancelled').length,
+    };
+
+    Object.entries(counts).forEach(([status, count]) => {
+      const badge = document.getElementById(`badge-${status}`);
+      if (badge) badge.textContent = count.toString();
+    });
   }
   
   function renderOrders() {
@@ -331,29 +573,45 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       ? orders 
       : orders.filter(o => o.status === currentFilter);
     
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 3rem; color: var(--color-text-muted);">
+            Nenhum pedido encontrado
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
     tbody.innerHTML = filtered.map(order => {
-      const itemsSummary = order.items.map((item: any) => 
-        `${item.quantity}x ${item.productName} ${item.liters}L`
-      ).join(', ');
+      const itemsSummary = order.items.slice(0, 2).map((item: any) => 
+        `${item.quantity}x ${item.productName}`
+      ).join(', ') + (order.items.length > 2 ? '...' : '');
       
-      const date = new Date(order.createdAt).toLocaleDateString('pt-BR');
+      const date = new Date(order.createdAt).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
       
       return `
         <tr>
-          <td>#${order.id}</td>
+          <td><strong>#${order.id.slice(-8)}</strong></td>
           <td>${order.customerName}</td>
           <td>${date}</td>
           <td>${itemsSummary}</td>
-          <td>R$ ${order.total.toFixed(2)}</td>
+          <td><strong>R$ ${order.total.toFixed(2)}</strong></td>
           <td><span class="status-badge ${order.status}">${getStatusLabel(order.status)}</span></td>
           <td>
-            <button class="btn-icon" data-view="${order.id}">👁️</button>
+            <button class="btn-icon" data-view="${order.id}" title="Ver detalhes">👁️</button>
           </td>
         </tr>
       `;
     }).join('');
     
-    // Add event listeners
     document.querySelectorAll('[data-view]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = (e.target as HTMLElement).getAttribute('data-view');
@@ -381,10 +639,11 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     const modal = document.getElementById('order-modal');
     if (modal) modal.style.display = 'flex';
     
-    (document.getElementById('order-id-display') as HTMLElement).textContent = `#${order.id}`;
+    (document.getElementById('order-id-display') as HTMLElement).textContent = `#${order.id.slice(-8)}`;
     (document.getElementById('customer-name') as HTMLElement).textContent = order.customerName;
     (document.getElementById('customer-phone') as HTMLElement).textContent = order.customerPhone;
-    (document.getElementById('customer-email') as HTMLElement).textContent = order.customerEmail;
+    (document.getElementById('customer-address') as HTMLElement).textContent = order.address || 'Não informado';
+    (document.getElementById('order-date') as HTMLElement).textContent = new Date(order.createdAt).toLocaleString('pt-BR');
     (document.getElementById('order-status') as HTMLSelectElement).value = order.status;
     (document.getElementById('order-total') as HTMLElement).textContent = `R$ ${order.total.toFixed(2)}`;
     
@@ -392,10 +651,16 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     if (itemsContainer) {
       itemsContainer.innerHTML = order.items.map((item: any) => `
         <div class="order-item">
-          ${item.quantity}x ${item.productName} (${item.liters}L) - R$ ${item.price.toFixed(2)}
+          <span>${item.quantity}x ${item.productName} (${item.liters}L)</span>
+          <strong>R$ ${item.price.toFixed(2)}</strong>
         </div>
       `).join('');
     }
+
+    // WhatsApp button
+    const whatsappBtn = document.getElementById('whatsapp-btn') as HTMLAnchorElement;
+    const message = `Olá ${order.customerName}! Seu pedido #${order.id.slice(-8)} foi atualizado.`;
+    whatsappBtn.href = `https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
   }
   
   function closeModal() {
@@ -404,7 +669,6 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     currentOrderId = null;
   }
   
-  // Filter buttons
   document.querySelectorAll('.filter-status').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const status = (e.target as HTMLElement).getAttribute('data-status');
@@ -416,9 +680,6 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       }
     });
   });
-  
-  // Set initial filter active
-  document.querySelector('[data-status="all"]')?.classList.add('active');
   
   document.getElementById('close-modal')?.addEventListener('click', closeModal);
   document.getElementById('cancel-btn')?.addEventListener('click', closeModal);

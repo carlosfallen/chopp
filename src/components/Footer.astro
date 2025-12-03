@@ -1,8 +1,5 @@
 ---
 // FILE: src/components/Footer.astro
-import { getSettings } from '../lib/content';
-const settings = await getSettings(Astro);
-const whatsappNumber = settings.whatsapp.replace(/\D/g, '');
 ---
 
 <footer class="footer">
@@ -43,7 +40,7 @@ const whatsappNumber = settings.whatsapp.replace(/\D/g, '');
         
         <div class="footer-column">
           <h4>Contato</h4>
-          <p>{whatsappNumber}</p>
+          <p>(89) 99433-3316</p>
           <p>chopehaus@gmail.com</p>
           <p>Seg-Dom: 8h às 22h</p>
         </div>

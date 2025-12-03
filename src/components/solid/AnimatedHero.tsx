@@ -143,7 +143,7 @@ if (cards && cards.length > 0) {
           </h1>
 
           <p class="hero-subtitle" ref={subtitleRef}>
-            Chopeira profissional gratuita, entrega express e instalação completa. Transforme qualquer momento em celebração.
+            Chopeira profissional, entrega express e instalação completa. Transforme qualquer momento em celebração.
           </p>
 
           <div class="hero-cta-group" ref={ctaRef}>
@@ -183,7 +183,7 @@ if (cards && cards.length > 0) {
           <div class="image-glow"></div>
           <img
             ref={imageRef}
-            src="https://pub-59d8b8edbc6f497984f8a95046b2263b.r2.dev/1764702094867-barril_50l.png"
+            src="https://pub-59d8b8edbc6f497984f8a95046b2263b.r2.dev/Kit%2030L.png"
             alt="Chopeira profissional servindo chopp gelado"
             class="hero-image"
           />
