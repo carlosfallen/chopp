@@ -140,7 +140,6 @@ if (cards && cards.length > 0) {
           <h1 ref={titleRef} class="hero-title">
             <span class="title-line">Chopp de Bar</span>
             <span class="title-line highlight">Na Sua Casa</span>
-            <span class="title-line">Sem Complicação</span>
           </h1>
 
           <p class="hero-subtitle" ref={subtitleRef}>

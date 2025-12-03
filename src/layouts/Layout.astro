@@ -36,11 +36,115 @@ const { title, description = 'Chopp Delivery Premium | Chopeira Grátis' } = Ast
     <slot />
   </main>
   <Footer />
+
+  <a 
+    href="https://wa.me/5589994333316?text=Olá!%20Gostaria%20de%20fazer%20um%20pedido" 
+    class="whatsapp-float" 
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Falar no WhatsApp"
+  >
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <path d="M16 0C7.164 0 0 7.164 0 16c0 2.828.738 5.484 2.028 7.78L.07 31.144l7.604-1.996A15.923 15.923 0 0016 32c8.836 0 16-7.164 16-16S24.836 0 16 0zm0 29.333c-2.548 0-4.94-.708-6.98-1.94l-.5-.296-5.188 1.36 1.384-5.056-.324-.52A13.265 13.265 0 012.667 16c0-7.364 5.968-13.333 13.333-13.333S29.333 8.636 29.333 16 23.364 29.333 16 29.333z" fill="currentColor"/>
+      <path d="M12 9.333c-.372 0-.932.14-1.416.72-.484.58-1.851 1.807-1.851 4.413 0 2.607 1.892 5.12 2.156 5.472.264.352 3.72 5.68 9.012 7.964 4.396 1.896 5.292 1.52 6.244 1.424.952-.096 3.072-1.256 3.504-2.468.432-1.212.432-2.252.304-2.468-.128-.216-.48-.352-1.008-.62-.528-.268-3.124-1.54-3.604-1.716-.48-.176-.828-.264-1.176.264-.348.528-1.348 1.716-1.652 2.068-.304.352-.608.396-1.136.128-.528-.268-2.228-.82-4.244-2.616-1.568-1.396-2.628-3.12-2.936-3.648-.308-.528-.032-.816.232-1.08.24-.24.528-.62.792-.932.264-.312.352-.528.528-.88.176-.352.088-.66-.044-.924-.132-.264-1.176-2.836-1.612-3.884-.424-1.02-.856-.88-1.176-.896-.304-.016-.652-.02-1-.02z" fill="currentColor"/>
+    </svg>
+    <span class="whatsapp-pulse"></span>
+  </a>
 </body>
 </html>
 
 <style is:global>
   main {
     min-height: calc(100vh - 80px);
+  }
+
+  .whatsapp-float {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    box-shadow: 
+      0 4px 20px rgba(37, 211, 102, 0.4),
+      0 0 0 0 rgba(37, 211, 102, 0.5);
+    z-index: 9999;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    text-decoration: none;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  .whatsapp-float:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 
+      0 8px 30px rgba(37, 211, 102, 0.6),
+      0 0 0 8px rgba(37, 211, 102, 0.1);
+  }
+
+  .whatsapp-float:active {
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  .whatsapp-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(37, 211, 102, 0.4);
+    animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.6);
+      opacity: 0;
+    }
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .whatsapp-float {
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: 56px;
+      height: 56px;
+    }
+
+    .whatsapp-float svg {
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .whatsapp-float {
+      bottom: 1rem;
+      right: 1rem;
+      width: 52px;
+      height: 52px;
+    }
+
+    .whatsapp-float svg {
+      width: 26px;
+      height: 26px;
+    }
   }
 </style>

@@ -93,6 +93,7 @@ export default function ShopContent() {
   };
   
   onMount(() => {
+    cartStore.initFromStorage();
     const hash = window.location.hash;
     if (hash === '#carrinho') {
       cartStore.openCart();

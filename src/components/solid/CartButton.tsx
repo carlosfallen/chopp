@@ -1,9 +1,15 @@
 // FILE: src/components/solid/CartButton.tsx (corrigido)
-import { Show } from 'solid-js';
 import { cartStore } from '../../store/cart';
+import { onMount } from 'solid-js';
 import './CartButton.css';
 
 export default function CartButton() {
+  onMount(() => {
+    cartStore.initFromStorage();
+  });
+
+  const totalItems = () => cartStore.getTotalItems();
+
   return (
     <button class="cart-button" onClick={() => {
       if (window.location.pathname !== '/loja') {
@@ -17,9 +23,12 @@ export default function CartButton() {
         <circle cx="20" cy="21" r="1"/>
         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
       </svg>
-      <Show when={cartStore.getTotalItems() > 0}>
-        <span class="cart-badge">{cartStore.getTotalItems()}</span>
-      </Show>
+      <span
+        classList={{ 'cart-badge': true, hidden: totalItems() === 0 }}
+        aria-hidden={totalItems() === 0}
+      >
+        {totalItems()}
+      </span>
     </button>
   );
 }
