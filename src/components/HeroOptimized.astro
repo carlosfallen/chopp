@@ -1,0 +1,483 @@
+---
+// Hero otimizado sem GSAP - usa apenas CSS
+---
+
+<section class="hero-section" id="hero">
+  <div class="hero-bg"></div>
+
+  <div class="hero-container">
+    <div class="hero-left-pane">
+      <div class="hero-content-wrapper">
+        <div class="hero-badge">
+          <span class="badge-icon">🏆</span>
+          <span>Melhor Chopp Delivery 2024</span>
+        </div>
+
+        <h1 class="hero-title">
+          <span class="title-line">Chopp de Bar</span>
+          <span class="title-line highlight">Na Sua Casa</span>
+          <span class="title-line">Sem Complicação</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Chopeira profissional gratuita, entrega express e instalação completa.
+          <strong> Transforme qualquer momento em celebração.</strong>
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="/#calculadora" class="btn btn-primary btn-hero">
+            <span>Calcular Quantidade</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+          <a href="/loja" class="btn btn-secondary btn-hero">
+            <span>Ver Produtos</span>
+          </a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <strong>5.000+</strong>
+            <span>Eventos Realizados</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <strong>4.9/5</strong>
+            <span>Avaliação Média</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <strong>24h</strong>
+            <span>Entrega Express</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-right-pane">
+      <div class="hero-image-wrapper">
+        <div class="image-glow"></div>
+        <img
+          src="https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&q=80&auto=format"
+          alt="Chopeira profissional servindo chopp gelado"
+          class="hero-image"
+          loading="eager"
+          decoding="async"
+          width="800"
+          height="600"
+        />
+
+        <div class="floating-card card-1">
+          <div class="card-icon">🍺</div>
+          <div class="card-text">
+            <strong>8+ Estilos</strong>
+            <span>Pilsen, IPA, Weiss...</span>
+          </div>
+        </div>
+
+        <div class="floating-card card-2">
+          <div class="card-icon">❄️</div>
+          <div class="card-text">
+            <strong>-2°C</strong>
+            <span>Temperatura ideal</span>
+          </div>
+        </div>
+
+        <div class="floating-card card-3">
+          <div class="card-icon">✓</div>
+          <div class="card-text">
+            <strong>Grátis</strong>
+            <span>Chopeira inclusa</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-section {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding-top: 80px;
+  }
+
+  .hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(30, 20, 10, 0.9) 50%, rgba(10, 10, 10, 0.95) 100%);
+    z-index: 0;
+  }
+
+  .hero-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  /* Animações CSS otimizadas */
+  .hero-left-pane {
+    animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .hero-right-pane {
+    animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .hero-title .title-line {
+    display: block;
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+  }
+
+  .hero-title .title-line:nth-child(1) { animation-delay: 0.2s; }
+  .hero-title .title-line:nth-child(2) { animation-delay: 0.4s; }
+  .hero-title .title-line:nth-child(3) { animation-delay: 0.6s; }
+
+  .hero-subtitle {
+    animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+    opacity: 0;
+  }
+
+  .hero-cta-group {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1s forwards;
+    opacity: 0;
+  }
+
+  .hero-stats {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards;
+    opacity: 0;
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Estilos do Hero */
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    color: var(--color-accent-gold);
+  }
+
+  .badge-icon {
+    font-size: 1.125rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+
+  .title-line {
+    background: linear-gradient(135deg, #ffffff 0%, #d4af37 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .title-line.highlight {
+    background: linear-gradient(135deg, #d4af37 0%, #ffbf00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+    max-width: 550px;
+  }
+
+  .hero-subtitle strong {
+    color: var(--color-accent-gold);
+  }
+
+  .hero-cta-group {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-hero {
+    padding: 1rem 2rem;
+    font-size: 1.0625rem;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .stat-item strong {
+    font-size: 1.75rem;
+    color: var(--color-accent-gold);
+    font-weight: 800;
+  }
+
+  .stat-item span {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Imagem */
+  .hero-image-wrapper {
+    position: relative;
+    animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
+  .image-glow {
+    position: absolute;
+    inset: -20%;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, transparent 70%);
+    filter: blur(40px);
+    z-index: -1;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: auto;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    will-change: transform;
+  }
+
+  /* Floating cards */
+  .floating-card {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: rgba(10, 10, 10, 0.9);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 1rem;
+    backdrop-filter: blur(10px);
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .card-1 {
+    top: 10%;
+    right: -10%;
+    animation-delay: 0s;
+  }
+
+  .card-2 {
+    bottom: 30%;
+    left: -10%;
+    animation-delay: 1s;
+  }
+
+  .card-3 {
+    bottom: 10%;
+    right: 10%;
+    animation-delay: 2s;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+
+  .card-icon {
+    font-size: 1.75rem;
+  }
+
+  .card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .card-text strong {
+    font-size: 0.9375rem;
+    color: var(--color-accent-gold);
+  }
+
+  .card-text span {
+    font-size: 0.8125rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Responsivo */
+  @media (max-width: 1024px) {
+    .hero-container {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      padding: 2rem 1.5rem;
+    }
+
+    .hero-left-pane {
+      text-align: center;
+    }
+
+    .hero-subtitle {
+      max-width: 100%;
+    }
+
+    .hero-cta-group {
+      justify-content: center;
+    }
+
+    .hero-stats {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-container {
+      padding: 2rem 1rem;
+    }
+
+    .hero-cta-group {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .btn-hero {
+      width: 100%;
+    }
+
+    .hero-stats {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .stat-divider {
+      display: none;
+    }
+
+    .floating-card {
+      display: none;
+    }
+  }
+
+  /* Otimizações mobile < 360px */
+  @media (max-width: 359px) {
+    .hero-section {
+      padding-top: 60px;
+    }
+
+    .hero-container {
+      padding: 1.5rem 0.875rem;
+    }
+
+    .hero-badge {
+      font-size: 0.75rem;
+      padding: 0.375rem 0.875rem;
+    }
+
+    .hero-title {
+      font-size: 2rem;
+    }
+
+    .hero-subtitle {
+      font-size: 0.9375rem;
+    }
+
+    .btn-hero {
+      padding: 0.875rem 1.5rem;
+      font-size: 0.9375rem;
+    }
+
+    .stat-item strong {
+      font-size: 1.5rem;
+    }
+
+    .stat-item span {
+      font-size: 0.8125rem;
+    }
+  }
+
+  /* Performance otimizations */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-left-pane,
+    .hero-right-pane,
+    .hero-title .title-line,
+    .hero-subtitle,
+    .hero-cta-group,
+    .hero-stats,
+    .hero-image-wrapper,
+    .floating-card {
+      animation: none !important;
+      opacity: 1 !important;
+    }
+  }
+</style>

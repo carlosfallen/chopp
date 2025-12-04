@@ -1,5 +1,6 @@
 ---
-import ChoppCalculator from './solid/ChoppCalculator';
+// Calculator otimizado - Astro puro
+import CalculatorOptimized from './CalculatorOptimized.astro';
 ---
 
 <section class="section calculator-section" id="calculadora">
@@ -8,7 +9,7 @@ import ChoppCalculator from './solid/ChoppCalculator';
     <p class="section-subtitle">
       Informe os dados do seu evento e descubra quanto chopp você precisa
     </p>
-    <ChoppCalculator client:idle />
+    <CalculatorOptimized />
   </div>
 </section>
 

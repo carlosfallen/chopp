@@ -13,15 +13,19 @@ import '../styles/global.css';
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loja - CHOPEHAUS | Compre Chopp Online</title>
   <meta name="description" content="Escolha seu chopp preferido e faça seu pedido online. Chopeira grátis, entrega rápida e instalação profissional.">
-  
+
+  <!-- Preconnect para performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+
+  <!-- Fonts otimizadas com display=swap -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet"></noscript>
 </head>
 <body>
   <Header />
   <main class="shop-main">
-    <ShopContent client:load />
+    <ShopContent client:idle />
   </main>
   <Footer />
 </body>
