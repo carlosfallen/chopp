@@ -1,5 +1,6 @@
 ---
-import AnimatedSteps from './solid/AnimatedSteps';
+// Steps otimizado - Intersection Observer + CSS
+import StepsOptimized from './StepsOptimized.astro';
 ---
 
 <section class="section" id="como-funciona">
@@ -8,6 +9,6 @@ import AnimatedSteps from './solid/AnimatedSteps';
     <p class="section-subtitle">
       Em poucos passos, o chopp perfeito chega à sua festa
     </p>
-    <AnimatedSteps client:idle />
+    <StepsOptimized />
   </div>
 </section>
