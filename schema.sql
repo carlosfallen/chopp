@@ -42,6 +42,15 @@ CREATE TABLE IF NOT EXISTS testimonials (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS categories (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  icon TEXT DEFAULT '🍺',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS orders (
   id TEXT PRIMARY KEY,
   customer_name TEXT NOT NULL,
@@ -56,6 +65,12 @@ CREATE TABLE IF NOT EXISTS orders (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+INSERT OR IGNORE INTO categories (id, name, description, icon) VALUES
+  ('pilsen', 'Pilsen', 'Cervejas leves e refrescantes', '🍺'),
+  ('ipa', 'IPA', 'India Pale Ale - cervejas lupuladas', '🌿'),
+  ('weiss', 'Weiss', 'Cervejas de trigo alemãs', '🌾'),
+  ('stout', 'Stout', 'Cervejas escuras e encorpadas', '☕');
 
 INSERT OR IGNORE INTO settings (key, value) VALUES
   ('whatsapp', '"(11) 99999-9999"'),

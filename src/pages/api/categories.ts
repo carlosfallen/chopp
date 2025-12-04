@@ -75,9 +75,9 @@ export const PUT: APIRoute = async ({ request, locals }) => {
       throw new Error('Database not initialized');
     }
 
-    const category = await request.json();
-    
-    if (!category.id) {
+    const data = await request.json();
+
+    if (!data.id) {
       return new Response(
         JSON.stringify({ error: 'ID da categoria é obrigatório' }),
         {
@@ -86,16 +86,17 @@ export const PUT: APIRoute = async ({ request, locals }) => {
         }
       );
     }
-    
-    await locals.db.updateCategory(category.id, category);
-    
-    return new Response(JSON.stringify({ success: true, category }), {
+
+    const { id, ...categoryData } = data;
+    await locals.db.updateCategory(id, categoryData);
+
+    return new Response(JSON.stringify({ success: true, category: data }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
     console.error('Error updating category:', error);
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       error: 'Failed to update category',
       details: error instanceof Error ? error.message : 'Unknown error'
     }), {

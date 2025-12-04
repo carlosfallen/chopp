@@ -40,6 +40,14 @@ export interface Testimonial {
   active: boolean;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  description?: string;
+  icon?: string;
+  createdAt?: string;
+}
+
 export interface Order {
   id: string;
   customerName: string;
@@ -317,7 +325,25 @@ export class Database {
     ).run();
   }
 
-  async updateOrder(order: Order): Promise<void> {
+  async updateOrder(id: string, order: Partial<Order>): Promise<void> {
+    const existingOrder = await this.db.prepare('SELECT * FROM orders WHERE id = ?').bind(id).first();
+
+    if (!existingOrder) {
+      throw new Error('Order not found');
+    }
+
+    const updatedOrder = {
+      customer_name: order.customerName ?? existingOrder.customer_name,
+      customer_phone: order.customerPhone ?? existingOrder.customer_phone,
+      customer_email: order.customerEmail ?? existingOrder.customer_email,
+      payment_method: order.paymentMethod ?? existingOrder.payment_method,
+      items: order.items ? JSON.stringify(order.items) : existingOrder.items,
+      total: order.total ?? existingOrder.total,
+      status: order.status ?? existingOrder.status,
+      delivery_date: order.deliveryDate !== undefined ? order.deliveryDate : existingOrder.delivery_date,
+      address: order.address !== undefined ? order.address : existingOrder.address,
+    };
+
     await this.db.prepare(`
       UPDATE orders SET
         customer_name = ?, customer_phone = ?, customer_email = ?, payment_method = ?,
@@ -325,16 +351,72 @@ export class Database {
         address = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `).bind(
-      order.customerName,
-      order.customerPhone,
-      order.customerEmail,
-      order.paymentMethod,
-      JSON.stringify(order.items),
-      order.total,
-      order.status,
-      order.deliveryDate || null,
-      order.address || null,
-      order.id
+      updatedOrder.customer_name,
+      updatedOrder.customer_phone,
+      updatedOrder.customer_email,
+      updatedOrder.payment_method,
+      updatedOrder.items,
+      updatedOrder.total,
+      updatedOrder.status,
+      updatedOrder.delivery_date,
+      updatedOrder.address,
+      id
     ).run();
+  }
+
+  async deleteOrder(id: string): Promise<void> {
+    await this.db.prepare('DELETE FROM orders WHERE id = ?').bind(id).run();
+  }
+
+  async getCategories(): Promise<Category[]> {
+    const results = await this.db.prepare(
+      'SELECT * FROM categories ORDER BY name ASC'
+    ).all();
+
+    return results.results.map((row: any) => ({
+      id: row.id,
+      name: row.name,
+      description: row.description,
+      icon: row.icon,
+      createdAt: row.created_at
+    }));
+  }
+
+  async createCategory(category: Category): Promise<void> {
+    await this.db.prepare(`
+      INSERT INTO categories (id, name, description, icon, created_at)
+      VALUES (?, ?, ?, ?, ?)
+    `).bind(
+      category.id,
+      category.name,
+      category.description || null,
+      category.icon || '🍺',
+      category.createdAt || new Date().toISOString()
+    ).run();
+  }
+
+  async updateCategory(id: string, category: Partial<Category>): Promise<void> {
+    const existingCategory = await this.db.prepare(
+      'SELECT * FROM categories WHERE id = ?'
+    ).bind(id).first();
+
+    if (!existingCategory) {
+      throw new Error('Category not found');
+    }
+
+    await this.db.prepare(`
+      UPDATE categories SET
+        name = ?, description = ?, icon = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).bind(
+      category.name ?? existingCategory.name,
+      category.description !== undefined ? category.description : existingCategory.description,
+      category.icon ?? existingCategory.icon,
+      id
+    ).run();
+  }
+
+  async deleteCategory(id: string): Promise<void> {
+    await this.db.prepare('DELETE FROM categories WHERE id = ?').bind(id).run();
   }
 }
