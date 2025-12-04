@@ -21,16 +21,38 @@ export default function ProductsManager() {
   const [loading, setLoading] = createSignal(true);
   const [editingProduct, setEditingProduct] = createSignal<Product | null>(null);
   const [showModal, setShowModal] = createSignal(false);
-  
+
   onMount(async () => {
     await loadProducts();
+
+    // Setup do botão adicionar produto - com retry
+    const setupAddButton = () => {
+      const addBtn = document.getElementById('add-product-btn');
+      if (addBtn) {
+        addBtn.onclick = () => openModal();
+        console.log('✅ Botão adicionar produto conectado');
+        return true;
+      }
+      console.log('⏳ Aguardando botão adicionar produto...');
+      return false;
+    };
+
+    // Tentar múltiplas vezes
+    if (!setupAddButton()) {
+      setTimeout(() => {
+        if (!setupAddButton()) {
+          setTimeout(setupAddButton, 200);
+        }
+      }, 100);
+    }
   });
-  
+
   const loadProducts = async () => {
     setLoading(true);
     try {
       const response = await fetch('/api/products');
       const data = await response.json();
+      console.log('Produtos carregados:', data);
       setProducts(data.products || []);
     } catch (error) {
       console.error('Error loading products:', error);
@@ -39,8 +61,9 @@ export default function ProductsManager() {
       setLoading(false);
     }
   };
-  
+
   const openModal = (product?: Product) => {
+    console.log('Abrindo modal', product);
     if (product) {
       setEditingProduct(product);
     } else {
@@ -60,79 +83,83 @@ export default function ProductsManager() {
     }
     setShowModal(true);
   };
-  
+
   const closeModal = () => {
     setShowModal(false);
     setEditingProduct(null);
   };
-  
+
   const saveProduct = async (product: Product) => {
     try {
       const method = product.id ? 'PUT' : 'POST';
       const url = product.id ? `/api/products/${product.id}` : '/api/products';
-      
+
       if (!product.id) {
         product.id = `product-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
       }
-      
+
+      console.log('Salvando produto:', { method, url, product });
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(product)
       });
-      
-      if (!response.ok) throw new Error('Failed to save product');
-      
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.details || 'Failed to save product');
+      }
+
       await loadProducts();
       closeModal();
-      alert('Produto salvo com sucesso!');
+      alert('✅ Produto salvo com sucesso!');
     } catch (error) {
       console.error('Error saving product:', error);
-      alert('Erro ao salvar produto');
+      alert(`❌ Erro ao salvar produto: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
-  
+
   const deleteProduct = async (id: string) => {
     if (!confirm('Tem certeza que deseja excluir este produto?')) return;
-    
+
     try {
       const response = await fetch(`/api/products/${id}`, {
         method: 'DELETE'
       });
-      
+
       if (!response.ok) throw new Error('Failed to delete product');
-      
+
       await loadProducts();
-      alert('Produto excluído com sucesso!');
+      alert('✅ Produto excluído com sucesso!');
     } catch (error) {
       console.error('Error deleting product:', error);
-      alert('Erro ao excluir produto');
+      alert('❌ Erro ao excluir produto');
     }
   };
-  
+
   const toggleActive = async (product: Product) => {
     await saveProduct({ ...product, active: !product.active });
   };
-  
+
   const toggleFeatured = async (product: Product) => {
     await saveProduct({ ...product, featured: !product.featured });
   };
-  
-  // Botão adicionar produto no topo
-  window.addEventListener('DOMContentLoaded', () => {
-    const addBtn = document.getElementById('add-product-btn');
-    if (addBtn) {
-      addBtn.addEventListener('click', () => openModal());
-    }
-  });
-  
+
   return (
     <div class="products-manager">
       <Show when={loading()}>
         <div class="loading">Carregando produtos...</div>
       </Show>
-      
-      <Show when={!loading()}>
+
+      <Show when={!loading() && products().length === 0}>
+        <div class="empty-state">
+          <p>Nenhum produto cadastrado ainda.</p>
+          <p>Clique em "Adicionar Produto" para começar!</p>
+        </div>
+      </Show>
+
+      <Show when={!loading() && products().length > 0}>
         <div class="products-grid">
           <For each={products()}>
             {(product: Product) => (
@@ -143,7 +170,7 @@ export default function ProductsManager() {
                   ) : (
                     <div class="image-placeholder">🍺</div>
                   )}
-                  
+
                   <div class="product-badges">
                     <Show when={product.featured}>
                       <span class="badge badge-featured">Destaque</span>
@@ -153,15 +180,15 @@ export default function ProductsManager() {
                     </Show>
                   </div>
                 </div>
-                
+
                 <div class="product-info-admin">
                   <div class="product-header-admin">
                     <h3>{product.name}</h3>
                     <span class="product-category">{product.category}</span>
                   </div>
-                  
+
                   <p class="product-description-admin">{product.description}</p>
-                  
+
                   <div class="product-details-admin">
                     <div class="detail-item">
                       <strong>Preço:</strong>
@@ -172,33 +199,33 @@ export default function ProductsManager() {
                       <span>{product.availableSizes.join('L, ')}L</span>
                     </div>
                   </div>
-                  
+
                   <div class="product-actions">
-                    <button 
-                      class="btn-icon" 
+                    <button
+                      class="btn-icon"
                       onClick={() => openModal(product)}
                       title="Editar"
                     >
                       ✏️
                     </button>
-                    
-                    <button 
+
+                    <button
                       class="btn-icon"
                       onClick={() => toggleFeatured(product)}
                       title={product.featured ? 'Remover destaque' : 'Destacar'}
                     >
                       {product.featured ? '⭐' : '☆'}
                     </button>
-                    
-                    <button 
+
+                    <button
                       class="btn-icon"
                       onClick={() => toggleActive(product)}
                       title={product.active ? 'Desativar' : 'Ativar'}
                     >
                       {product.active ? '✓' : '✗'}
                     </button>
-                    
-                    <button 
+
+                    <button
                       class="btn-icon btn-danger"
                       onClick={() => deleteProduct(product.id)}
                       title="Excluir"
@@ -212,9 +239,9 @@ export default function ProductsManager() {
           </For>
         </div>
       </Show>
-      
+
       <Show when={showModal()}>
-        <ProductModal 
+        <ProductModal
           product={editingProduct()}
           onSave={saveProduct}
           onClose={closeModal}
@@ -282,12 +309,12 @@ function ProductModal(props: {
     setUploading(true);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
+      const formDataUpload = new FormData();
+      formDataUpload.append('file', file);
 
       const response = await fetch('/api/upload', {
         method: 'POST',
-        body: formData
+        body: formDataUpload
       });
 
       if (!response.ok) throw new Error('Upload failed');
@@ -310,7 +337,7 @@ function ProductModal(props: {
     e.preventDefault();
     props.onSave(formData());
   };
-  
+
   return (
     <div class="modal-overlay" onClick={props.onClose}>
       <div class="modal-content" onClick={(e: MouseEvent) => e.stopPropagation()}>
@@ -318,22 +345,22 @@ function ProductModal(props: {
           <h2>{props.product?.id ? 'Editar Produto' : 'Novo Produto'}</h2>
           <button class="modal-close" onClick={props.onClose}>✕</button>
         </div>
-        
+
         <form onSubmit={handleSubmit} class="product-form">
           <div class="form-row">
             <div class="form-group">
               <label>Nome do Produto *</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 required
                 value={formData().name}
                 onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
               />
             </div>
-            
+
             <div class="form-group">
               <label>Categoria *</label>
-              <select 
+              <select
                 value={formData().category}
                 onChange={(e) => setFormData({ ...formData(), category: e.currentTarget.value })}
               >
@@ -347,41 +374,41 @@ function ProductModal(props: {
               </select>
             </div>
           </div>
-          
+
           <div class="form-group">
             <label>Descrição *</label>
-            <textarea 
+            <textarea
               required
               rows={3}
               value={formData().description}
               onInput={(e) => setFormData({ ...formData(), description: e.currentTarget.value })}
             />
           </div>
-          
+
           <div class="form-group">
             <label>Notas Sensoriais</label>
-            <input 
+            <input
               type="text"
               placeholder="Ex: Dourado brilhante, espuma cremosa"
               value={formData().sensorNotes}
               onInput={(e) => setFormData({ ...formData(), sensorNotes: e.currentTarget.value })}
             />
           </div>
-          
+
           <div class="form-row">
             <div class="form-group">
               <label>Ideal para</label>
-              <input 
+              <input
                 type="text"
                 placeholder="Ex: 15-30 convidados"
                 value={formData().idealFor}
                 onInput={(e) => setFormData({ ...formData(), idealFor: e.currentTarget.value })}
               />
             </div>
-            
+
             <div class="form-group">
               <label>Preço por Litro (R$) *</label>
-              <input 
+              <input
                 type="number"
                 step="0.01"
                 min="0"
@@ -391,7 +418,7 @@ function ProductModal(props: {
               />
             </div>
           </div>
-          
+
           <div class="form-group">
             <label>Imagem do Produto</label>
 
@@ -438,19 +465,19 @@ function ProductModal(props: {
               </div>
             </Show>
           </div>
-          
+
           <div class="form-group">
             <label class="checkbox-label">
-              <input 
+              <input
                 type="checkbox"
                 checked={formData().featured}
                 onChange={(e) => setFormData({ ...formData(), featured: e.currentTarget.checked })}
               />
               <span>Produto em destaque</span>
             </label>
-            
+
             <label class="checkbox-label">
-              <input 
+              <input
                 type="checkbox"
                 checked={formData().active}
                 onChange={(e) => setFormData({ ...formData(), active: e.currentTarget.checked })}
@@ -458,13 +485,13 @@ function ProductModal(props: {
               <span>Produto ativo</span>
             </label>
           </div>
-          
+
           <div class="form-actions">
             <button type="button" class="btn btn-secondary" onClick={props.onClose}>
               Cancelar
             </button>
             <button type="submit" class="btn btn-primary">
-              Salvar Produto
+              💾 Salvar Produto
             </button>
           </div>
         </form>

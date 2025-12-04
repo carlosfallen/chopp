@@ -1,0 +1,356 @@
+---
+// FILE: src/pages/admin/categories.astro
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Categorias">
+  <div class="admin-content">
+    <div class="content-header">
+      <div>
+        <h1>Categorias</h1>
+        <p>Gerencie as categorias de produtos</p>
+      </div>
+      <button class="btn btn-primary" id="add-category">
+        ➕ Nova Categoria
+      </button>
+    </div>
+
+    <div class="categories-grid" id="categories-grid">
+      <!-- Categories will load here -->
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="category-modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title">Nova Categoria</h2>
+        <button class="modal-close" id="close-modal">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="category-name">Nome da Categoria *</label>
+          <input type="text" id="category-name" placeholder="Ex: Pilsen" required />
+        </div>
+
+        <div class="form-group">
+          <label for="category-description">Descrição</label>
+          <textarea id="category-description" placeholder="Descrição da categoria"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="category-icon">Ícone (emoji)</label>
+          <input type="text" id="category-icon" placeholder="🍺" maxlength="2" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-btn">Cancelar</button>
+        <button class="btn btn-primary" id="save-category">Salvar</button>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .admin-content {
+    padding: var(--spacing-2xl);
+  }
+
+  .content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-2xl);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+  }
+
+  .category-card {
+    background: var(--color-bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .category-card:hover {
+    border-color: var(--color-accent-gold);
+    transform: translateY(-4px);
+  }
+
+  .category-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .category-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-text-primary);
+  }
+
+  .category-description {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .category-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+  }
+
+  .btn-icon {
+    padding: var(--spacing-xs);
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-icon:hover {
+    background: rgba(212, 175, 55, 0.2);
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: var(--spacing-md);
+  }
+
+  .modal-content {
+    background: var(--color-bg-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-lg);
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xl);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .modal-close {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .modal-body {
+    padding: var(--spacing-xl);
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xl);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .modal-footer button {
+    flex: 1;
+  }
+
+  .form-group {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+  }
+
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-bg-secondary);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    font-family: inherit;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-accent-gold);
+  }
+
+  .form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+</style>
+
+<script>
+  let categories: any[] = [];
+  let editingId: string | null = null;
+
+  async function loadCategories() {
+    try {
+      const response = await fetch('/api/categories');
+      const data = await response.json();
+      categories = data.categories || [];
+      renderCategories();
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  }
+
+  function renderCategories() {
+    const grid = document.getElementById('categories-grid');
+    if (!grid) return;
+
+    if (categories.length === 0) {
+      grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--color-text-muted);">Nenhuma categoria cadastrada</p>';
+      return;
+    }
+
+    grid.innerHTML = categories.map(cat => `
+      <div class="category-card">
+        <div class="category-icon">${cat.icon || '🍺'}</div>
+        <h3 class="category-name">${cat.name}</h3>
+        <p class="category-description">${cat.description || ''}</p>
+        <div class="category-actions">
+          <button class="btn-icon" data-edit="${cat.id}">✏️</button>
+          <button class="btn-icon" data-delete="${cat.id}">🗑️</button>
+        </div>
+      </div>
+    `).join('');
+
+    grid.querySelectorAll('[data-edit]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.target as HTMLElement).getAttribute('data-edit');
+        if (id) editCategory(id);
+      });
+    });
+
+    grid.querySelectorAll('[data-delete]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.target as HTMLElement).getAttribute('data-delete');
+        if (id) deleteCategory(id);
+      });
+    });
+  }
+
+  function openModal(editing = false) {
+    const modal = document.getElementById('category-modal');
+    if (modal) modal.style.display = 'flex';
+    
+    const title = document.getElementById('modal-title');
+    if (title) title.textContent = editing ? 'Editar Categoria' : 'Nova Categoria';
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('category-modal');
+    if (modal) modal.style.display = 'none';
+    
+    (document.getElementById('category-name') as HTMLInputElement).value = '';
+    (document.getElementById('category-description') as HTMLTextAreaElement).value = '';
+    (document.getElementById('category-icon') as HTMLInputElement).value = '';
+    editingId = null;
+  }
+
+  function editCategory(id: string) {
+    const category = categories.find(c => c.id === id);
+    if (!category) return;
+
+    editingId = id;
+    (document.getElementById('category-name') as HTMLInputElement).value = category.name;
+    (document.getElementById('category-description') as HTMLTextAreaElement).value = category.description || '';
+    (document.getElementById('category-icon') as HTMLInputElement).value = category.icon || '';
+    openModal(true);
+  }
+
+  async function deleteCategory(id: string) {
+    if (!confirm('Deseja realmente excluir esta categoria?')) return;
+
+    try {
+      const response = await fetch('/api/categories', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+
+      if (response.ok) {
+        alert('Categoria excluída!');
+        loadCategories();
+      }
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      alert('Erro ao excluir categoria');
+    }
+  }
+
+  document.getElementById('add-category')?.addEventListener('click', () => openModal());
+  document.getElementById('close-modal')?.addEventListener('click', closeModal);
+  document.getElementById('cancel-btn')?.addEventListener('click', closeModal);
+
+  document.getElementById('save-category')?.addEventListener('click', async () => {
+    const name = (document.getElementById('category-name') as HTMLInputElement).value;
+    const description = (document.getElementById('category-description') as HTMLTextAreaElement).value;
+    const icon = (document.getElementById('category-icon') as HTMLInputElement).value;
+
+    if (!name) {
+      alert('Nome da categoria é obrigatório');
+      return;
+    }
+
+    const category = {
+      id: editingId || `cat-${Date.now()}`,
+      name,
+      description,
+      icon: icon || '🍺'
+    };
+
+    try {
+      const response = await fetch('/api/categories', {
+        method: editingId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(category)
+      });
+
+      if (response.ok) {
+        alert(`Categoria ${editingId ? 'atualizada' : 'criada'} com sucesso!`);
+        closeModal();
+        loadCategories();
+      }
+    } catch (error) {
+      console.error('Error saving category:', error);
+      alert('Erro ao salvar categoria');
+    }
+  });
+
+  loadCategories();
+</script>

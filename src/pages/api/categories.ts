@@ -1,5 +1,7 @@
-// FILE: src/pages/api/testimonials.ts (corrigido)
+// FILE: src/pages/api/categories.ts
 import type { APIRoute } from 'astro';
+
+export const prerender = false;
 
 export const GET: APIRoute = async ({ locals }) => {
   try {
@@ -7,19 +9,19 @@ export const GET: APIRoute = async ({ locals }) => {
       throw new Error('Database not initialized');
     }
 
-    const testimonials = await locals.db.getTestimonials();
+    const categories = await locals.db.getCategories();
     
-    return new Response(JSON.stringify({ testimonials }), {
+    return new Response(JSON.stringify({ categories }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
-    console.error('Error getting testimonials:', error);
+    console.error('Error getting categories:', error);
     return new Response(JSON.stringify({ 
-      error: 'Failed to get testimonials',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      error: 'Failed to get categories',
+      categories: []
     }), {
-      status: 500,
+      status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
   }
@@ -31,22 +33,34 @@ export const POST: APIRoute = async ({ request, locals }) => {
       throw new Error('Database not initialized');
     }
 
-    const testimonial = await request.json();
+    const category = await request.json();
     
-    if (!testimonial.id) {
-      testimonial.id = `testimonial-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+    if (!category.name) {
+      return new Response(
+        JSON.stringify({ error: 'Nome da categoria é obrigatório' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
     }
     
-    await locals.db.createTestimonial(testimonial);
+    const newCategory = {
+      ...category,
+      id: category.id || `cat-${Date.now()}`,
+      createdAt: new Date().toISOString()
+    };
     
-    return new Response(JSON.stringify({ success: true, testimonial }), {
-      status: 201,
+    await locals.db.createCategory(newCategory);
+    
+    return new Response(JSON.stringify({ success: true, category: newCategory }), {
+      status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
-    console.error('Error creating testimonial:', error);
+    console.error('Error creating category:', error);
     return new Response(JSON.stringify({ 
-      error: 'Failed to create testimonial',
+      error: 'Failed to create category',
       details: error instanceof Error ? error.message : 'Unknown error'
     }), {
       status: 500,
@@ -61,18 +75,28 @@ export const PUT: APIRoute = async ({ request, locals }) => {
       throw new Error('Database not initialized');
     }
 
-    const testimonial = await request.json();
+    const category = await request.json();
     
-    await locals.db.updateTestimonial(testimonial);
+    if (!category.id) {
+      return new Response(
+        JSON.stringify({ error: 'ID da categoria é obrigatório' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
     
-    return new Response(JSON.stringify({ success: true }), {
+    await locals.db.updateCategory(category.id, category);
+    
+    return new Response(JSON.stringify({ success: true, category }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
-    console.error('Error updating testimonial:', error);
+    console.error('Error updating category:', error);
     return new Response(JSON.stringify({ 
-      error: 'Failed to update testimonial',
+      error: 'Failed to update category',
       details: error instanceof Error ? error.message : 'Unknown error'
     }), {
       status: 500,
@@ -89,16 +113,26 @@ export const DELETE: APIRoute = async ({ request, locals }) => {
 
     const { id } = await request.json();
     
-    await locals.db.deleteTestimonial(id);
+    if (!id) {
+      return new Response(
+        JSON.stringify({ error: 'ID da categoria é obrigatório' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+    
+    await locals.db.deleteCategory(id);
     
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
-    console.error('Error deleting testimonial:', error);
+    console.error('Error deleting category:', error);
     return new Response(JSON.stringify({ 
-      error: 'Failed to delete testimonial',
+      error: 'Failed to delete category',
       details: error instanceof Error ? error.message : 'Unknown error'
     }), {
       status: 500,

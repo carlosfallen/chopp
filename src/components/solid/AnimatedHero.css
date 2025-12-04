@@ -77,6 +77,11 @@
   margin-bottom: var(--spacing-2xl);
 }
 
+.hero-cta-group .btn-hero {
+  opacity: 1;
+  transform: none;
+}
+
 .btn-hero {
   display: flex;
   align-items: center;
@@ -158,35 +163,40 @@
 
 .hero-image-wrapper {
   position: relative;
-  width: 100%;
-  max-width: 600px;
-  aspect-ratio: 4/5;
+  width: 90%;           /* antes 110% */
+  max-width: 600px;     /* limite de largura, ajustável */
+  height: auto;         /* deixa a altura acompanhar a imagem */
+  margin-right: 0;      /* tira o -10% que jogava pra fora */
+  overflow: visible;
 }
+
 
 .image-glow {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 80%;
-  height: 80%;
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.3), transparent);
-  filter: blur(60px);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.15), transparent);
+  filter: blur(80px);
   transform: translate(-50%, -50%);
   z-index: -1;
   animation: pulse 4s ease-in-out infinite;
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+  0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
 }
 
 .hero-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-gold);
+  object-position: center;
+  opacity: 0.95;
+  mask-image: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,1) 30%, rgba(0,0,0,1) 70%, rgba(0,0,0,0.3) 100%);
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,1) 30%, rgba(0,0,0,1) 70%, rgba(0,0,0,0.3) 100%);
 }
 
 .floating-card {
@@ -209,19 +219,19 @@
 }
 
 .card-1 {
-  top: 10%;
-  right: -10%;
+  top: 2%;
+  right: -20%;
 }
 
 .card-2 {
-  top: 50%;
-  left: -10%;
+  top: 55%;
+  left: -14%;
   transform: translateY(-50%);
 }
 
 .card-3 {
-  bottom: 10%;
-  right: -5%;
+  bottom: 0;
+  right: -16%;
 }
 
 .card-icon {

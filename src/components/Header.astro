@@ -10,7 +10,7 @@ const whatsappNumber = settings.whatsapp.replace(/\D/g, '');
 <header class="header" id="header">
   <div class="container header-container">
     <a href="/" class="logo">
-      <span class="logo-text">{settings.brandName}</span>
+      <span class="logo-text">CHOPEHAUS</span>
     </a>
     
     <nav class="nav" id="nav">
@@ -18,17 +18,11 @@ const whatsappNumber = settings.whatsapp.replace(/\D/g, '');
       <a href="/#chopps">Chopps</a>
       <a href="/#experiencia">Experiência</a>
       <a href="/#calculadora">Calculadora</a>
-      <a href="/#depoimentos">Depoimentos</a>
-      <a href="/#faq">FAQ</a>
       <a href="/loja" class="nav-shop">Loja</a>
     </nav>
     
     <div class="header-actions">
       <CartButton client:load />
-      <a href={`https://wa.me/55${whatsappNumber}?text=Olá!%20Gostaria%20de%20fazer%20um%20pedido`} 
-         class="btn btn-primary" target="_blank">
-        Pedir pelo WhatsApp
-      </a>
       <button class="mobile-menu-toggle" id="mobile-toggle">
         <span></span>
         <span></span>

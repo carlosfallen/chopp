@@ -1,0 +1,468 @@
+---
+// FILE: src/pages/produto/[id].astro
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  return [];
+}
+---
+
+<Layout title="Detalhes do Produto">
+  <div class="product-detail-page">
+    <div class="product-background">
+      <div class="bg-gradient"></div>
+      <div class="bg-grid"></div>
+    </div>
+
+    <div class="container">
+      <a href="/loja" class="back-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Voltar para a loja
+      </a>
+
+      <div id="product-content" class="product-content">
+        <div class="loading">Carregando produto...</div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .product-detail-page {
+    min-height: 100vh;
+    background: #0a0a0a;
+    padding: 2rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-background {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .bg-gradient {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1200px;
+    height: 600px;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 184, 0, 0.08) 0%, transparent 70%);
+  }
+
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    margin-bottom: 2rem;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    padding: 0.5rem 0;
+  }
+
+  .back-link:hover {
+    color: #FFB800;
+    gap: 0.75rem;
+  }
+
+  .back-link svg {
+    transition: transform 0.3s ease;
+  }
+
+  .back-link:hover svg {
+    transform: translateX(-4px);
+  }
+
+  .product-content {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1.5rem;
+    padding: 3rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  }
+
+  .loading {
+    text-align: center;
+    padding: 4rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .product-image-section {
+    position: relative;
+  }
+
+  .product-main-image {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-main-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-placeholder {
+    font-size: 8rem;
+  }
+
+  .product-info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .product-category-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 184, 0, 0.1);
+    border: 1px solid rgba(255, 184, 0, 0.2);
+    border-radius: 2rem;
+    color: #FFB800;
+    font-size: 0.875rem;
+    font-weight: 600;
+    width: fit-content;
+  }
+
+  .product-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .product-description {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+
+  .product-sensor-notes {
+    padding: 1.5rem;
+    background: rgba(255, 184, 0, 0.05);
+    border: 1px solid rgba(255, 184, 0, 0.15);
+    border-radius: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-style: italic;
+  }
+
+  .product-sizes-section {
+    margin: 2rem 0;
+  }
+
+  .product-sizes-section h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: #fff;
+  }
+
+  .size-options {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .size-btn {
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.75rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .size-btn:hover {
+    border-color: rgba(255, 184, 0, 0.5);
+    background: rgba(255, 184, 0, 0.1);
+  }
+
+  .size-btn.active {
+    border-color: #FFB800;
+    background: rgba(255, 184, 0, 0.2);
+    color: #FFB800;
+  }
+
+  .product-price-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+    background: rgba(255, 184, 0, 0.05);
+    border: 1px solid rgba(255, 184, 0, 0.2);
+    border-radius: 1rem;
+  }
+
+  .price-label {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .price-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #FFB800;
+  }
+
+  .add-to-cart-btn {
+    width: 100%;
+    padding: 1.25rem 2rem;
+    background: linear-gradient(135deg, #FFB800, #FF8C00);
+    color: #000;
+    font-size: 1.125rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(255, 184, 0, 0.3);
+  }
+
+  .add-to-cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(255, 184, 0, 0.5);
+  }
+
+  .add-to-cart-btn:active {
+    transform: translateY(0);
+  }
+
+  .product-details-section {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    padding: 2rem;
+  }
+
+  .product-details-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #FFB800;
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .detail-label {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.875rem;
+  }
+
+  .detail-value {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .product-content {
+      padding: 2rem 1.5rem;
+    }
+
+    .product-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .product-title {
+      font-size: 1.75rem;
+    }
+
+    .price-value {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+<script>
+  const productId = window.location.pathname.split('/').pop();
+
+  async function loadProduct() {
+    try {
+      const response = await fetch('/api/products');
+      const data = await response.json();
+      const product = data.products.find((p: any) => p.id === productId);
+
+      if (!product) {
+        document.getElementById('product-content')!.innerHTML = `
+          <div class="loading">Produto não encontrado</div>
+        `;
+        return;
+      }
+
+      let selectedSize = product.availableSizes[0];
+
+      const render = () => {
+        const imageUrl = product.imageUrl || product.image || '';
+        const price = product.pricePerLiter * selectedSize;
+
+        document.getElementById('product-content')!.innerHTML = `
+          <div class="product-grid">
+            <div class="product-image-section">
+              <div class="product-main-image">
+                ${imageUrl ? `
+                  <img src="${imageUrl}" alt="${product.name}" />
+                ` : `
+                  <div class="product-placeholder">🍺</div>
+                `}
+              </div>
+            </div>
+
+            <div class="product-info-section">
+              <div class="product-category-badge">${product.category}</div>
+              <h1 class="product-title">${product.name}</h1>
+              <p class="product-description">${product.description}</p>
+              ${product.sensorNotes ? `
+                <div class="product-sensor-notes">
+                  ${product.sensorNotes}
+                </div>
+              ` : ''}
+
+              <div class="product-sizes-section">
+                <h3>Escolha o tamanho:</h3>
+                <div class="size-options">
+                  ${product.availableSizes.map((size: number) => `
+                    <button 
+                      class="size-btn ${size === selectedSize ? 'active' : ''}" 
+                      data-size="${size}"
+                    >
+                      ${size}L
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+
+              <div class="product-price-section">
+                <div>
+                  <div class="price-label">Preço total</div>
+                  <div class="price-value">R$ ${price.toFixed(2)}</div>
+                </div>
+              </div>
+
+              <button class="add-to-cart-btn" id="add-to-cart">
+                Adicionar ao Carrinho
+              </button>
+            </div>
+          </div>
+
+          <div class="product-details-section">
+            <h3>Detalhes do Produto</h3>
+            <div class="details-grid">
+              <div class="detail-item">
+                <div class="detail-label">Categoria</div>
+                <div class="detail-value">${product.category}</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Preço por Litro</div>
+                <div class="detail-value">R$ ${product.pricePerLiter.toFixed(2)}</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Tamanhos Disponíveis</div>
+                <div class="detail-value">${product.availableSizes.join('L, ')}L</div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.querySelectorAll('.size-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const size = parseInt((e.target as HTMLElement).getAttribute('data-size') || '0');
+            selectedSize = size;
+            render();
+          });
+        });
+
+        document.getElementById('add-to-cart')?.addEventListener('click', () => {
+          const cart = JSON.parse(localStorage.getItem('chopp-cart') || '[]');
+          
+          const existingIndex = cart.findIndex((item: any) => 
+            item.id === product.id && item.liters === selectedSize
+          );
+
+          if (existingIndex >= 0) {
+            cart[existingIndex].quantity += 1;
+          } else {
+            cart.push({
+              id: product.id,
+              name: product.name,
+              category: product.category,
+              description: product.description,
+              pricePerLiter: product.pricePerLiter,
+              liters: selectedSize,
+              image: imageUrl,
+              quantity: 1
+            });
+          }
+
+          localStorage.setItem('chopp-cart', JSON.stringify(cart));
+          alert('Produto adicionado ao carrinho!');
+          window.location.href = '/loja#carrinho';
+        });
+      };
+
+      render();
+    } catch (error) {
+      console.error('Error loading product:', error);
+      document.getElementById('product-content')!.innerHTML = `
+        <div class="loading">Erro ao carregar produto</div>
+      `;
+    }
+  }
+
+  loadProduct();
+</script>

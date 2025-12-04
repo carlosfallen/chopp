@@ -13,9 +13,11 @@ export type CartItem = {
 
 const [cartItems, setCartItems] = createSignal<CartItem[]>([]);
 const [isCartOpen, setIsCartOpen] = createSignal(false);
+let storageLoaded = false;
 
-// Load from localStorage on init
-if (typeof window !== 'undefined') {
+const loadFromStorage = () => {
+  if (storageLoaded || typeof window === 'undefined') return;
+  storageLoaded = true;
   const stored = localStorage.getItem('chopp-cart');
   if (stored) {
     try {
@@ -24,13 +26,15 @@ if (typeof window !== 'undefined') {
       console.error('Error loading cart:', e);
     }
   }
-}
+};
 
 export const cartStore = {
   items: cartItems,
   isOpen: isCartOpen,
+  initFromStorage: loadFromStorage,
   
   addItem: (item: Omit<CartItem, 'quantity'>) => {
+    loadFromStorage();
     const current = cartItems();
     const existing = current.find(i => i.id === item.id && i.liters === item.liters);
     
@@ -50,6 +54,7 @@ export const cartStore = {
   },
   
   removeItem: (id: string, liters: number) => {
+    loadFromStorage();
     setCartItems(cartItems().filter(i => !(i.id === id && i.liters === liters)));
     if (typeof window !== 'undefined') {
       localStorage.setItem('chopp-cart', JSON.stringify(cartItems()));
@@ -57,6 +62,7 @@ export const cartStore = {
   },
   
   updateQuantity: (id: string, liters: number, quantity: number) => {
+    loadFromStorage();
     if (quantity <= 0) {
       cartStore.removeItem(id, liters);
       return;
@@ -74,6 +80,7 @@ export const cartStore = {
   },
   
   clear: () => {
+    loadFromStorage();
     setCartItems([]);
     if (typeof window !== 'undefined') {
       localStorage.removeItem('chopp-cart');

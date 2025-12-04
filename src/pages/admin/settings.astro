@@ -7,243 +7,184 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   <div class="admin-content">
     <div class="content-header">
       <div>
-        <h1>Configurações Gerais</h1>
-        <p>Gerencie textos, contatos e informações do site</p>
+        <h1>Configurações da Empresa</h1>
+        <p>Gerencie os dados da empresa exibidos no site</p>
       </div>
+      <button class="btn btn-primary" id="save-settings">
+        💾 Salvar Alterações
+      </button>
     </div>
-    
-    <form id="settings-form" class="settings-form">
-      <div class="settings-section">
-        <h3>Informações da Marca</h3>
+
+    <div class="settings-container">
+      <div class="settings-card">
+        <h3>Informações Básicas</h3>
         <div class="form-group">
-          <label>Nome da Marca</label>
-          <input type="text" name="brandName" required />
+          <label for="brandName">Nome da Marca *</label>
+          <input type="text" id="brandName" placeholder="ChoppExpress" required />
+        </div>
+
+        <div class="form-group">
+          <label for="email">E-mail de Contato *</label>
+          <input type="email" id="email" placeholder="contato@choppexpress.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="whatsapp">WhatsApp (com código do país) *</label>
+          <input type="tel" id="whatsapp" placeholder="5511999999999" required />
+        </div>
+
+        <div class="form-group">
+          <label for="workingHours">Horário de Funcionamento</label>
+          <input type="text" id="workingHours" placeholder="Seg-Dom: 8h às 22h" />
         </div>
       </div>
-      
-      <div class="settings-section">
-        <h3>Imagem Hero (Página Inicial)</h3>
-        <div class="form-group">
-          <label>Selecione uma imagem do R2</label>
-          <select id="image-selector" class="image-select">
-            <option value="">Carregando imagens...</option>
-          </select>
-          <small>Ou cole a URL manualmente abaixo</small>
-        </div>
-        <div class="form-group">
-          <label>URL da Imagem Hero</label>
-          <input type="url" name="heroImage" id="heroImage" placeholder="https://..." />
-        </div>
-        <div class="image-preview" id="hero-preview"></div>
-      </div>
-      
-      <div class="settings-section">
-        <h3>Informações de Contato</h3>
-        <div class="form-group">
-          <label>WhatsApp (com DDD)</label>
-          <input type="text" name="whatsapp" placeholder="(11) 99999-9999" required />
-        </div>
-        <div class="form-group">
-          <label>E-mail</label>
-          <input type="email" name="email" required />
-        </div>
-        <div class="form-group">
-          <label>Horário de Atendimento</label>
-          <input type="text" name="workingHours" required />
-        </div>
-      </div>
-      
-      <div class="settings-section">
+
+      <div class="settings-card">
         <h3>Redes Sociais</h3>
         <div class="form-group">
-          <label>Instagram</label>
-          <input type="text" name="instagram" placeholder="@nomedamarca" />
+          <label for="instagram">Instagram (usuário)</label>
+          <input type="text" id="instagram" placeholder="@choppexpress" />
         </div>
+
         <div class="form-group">
-          <label>Facebook</label>
-          <input type="text" name="facebook" placeholder="facebook.com/nomedamarca" />
+          <label for="facebook">Facebook (URL)</label>
+          <input type="url" id="facebook" placeholder="https://facebook.com/choppexpress" />
         </div>
       </div>
-      
-      <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-    </form>
+
+      <div class="settings-card">
+        <h3>Endereço</h3>
+        <div class="form-group">
+          <label for="address">Endereço Completo</label>
+          <textarea id="address" placeholder="Rua Exemplo, 123 - Bairro - Cidade/UF"></textarea>
+        </div>
+      </div>
+    </div>
   </div>
 </AdminLayout>
 
 <style>
   .admin-content {
     padding: var(--spacing-2xl);
-    max-width: 800px;
+    max-width: 1200px;
+    margin: 0 auto;
   }
-  
-  .settings-form {
+
+  .content-header {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-2xl);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+  }
+
+  .settings-container {
+    display: grid;
     gap: var(--spacing-xl);
   }
-  
-  .settings-section {
-    padding: var(--spacing-xl);
+
+  .settings-card {
     background: var(--color-bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
   }
-  
-  .settings-section h3 {
-    margin-bottom: var(--spacing-md);
+
+  .settings-card h3 {
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-accent-gold);
   }
-  
+
   .form-group {
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
   }
-  
+
   .form-group label {
     display: block;
     margin-bottom: var(--spacing-xs);
     font-weight: 600;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: var(--spacing-sm);
-    background: var(--color-bg-primary);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--border-radius);
-    color: var(--color-text-primary);
-  }
-  
-  .form-group small {
-    display: block;
-    margin-top: var(--spacing-xs);
-    color: var(--color-text-muted);
-    font-size: 0.875rem;
-  }
-  
-  .image-preview {
-    margin-top: var(--spacing-md);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-  }
-  
-  .image-preview img {
-    width: 100%;
-    max-height: 300px;
-    object-fit: cover;
+    color: var(--color-text-secondary);
   }
 
-  .image-select {
+  .form-group input,
+  .form-group textarea {
     width: 100%;
-    padding: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
     background: var(--color-bg-primary);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--border-radius);
     color: var(--color-text-primary);
-    margin-bottom: var(--spacing-sm);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-accent-gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+  }
+
+  .form-group textarea {
+    min-height: 100px;
+    resize: vertical;
   }
 </style>
 
 <script>
-  async function loadImages() {
-    try {
-      const response = await fetch('/api/images');
-      if (!response.ok) throw new Error('Failed to load images');
-
-      const data = await response.json();
-      const selector = document.getElementById('image-selector') as HTMLSelectElement;
-
-      if (selector && data.images) {
-        selector.innerHTML = '<option value="">Selecione uma imagem</option>';
-        data.images.forEach((img: any) => {
-          const option = document.createElement('option');
-          option.value = img.url;
-          option.textContent = img.key;
-          selector.appendChild(option);
-        });
-      }
-    } catch (error) {
-      console.error('Error loading images:', error);
-      const selector = document.getElementById('image-selector') as HTMLSelectElement;
-      if (selector) {
-        selector.innerHTML = '<option value="">Erro ao carregar imagens</option>';
-      }
-    }
-  }
-
   async function loadSettings() {
     try {
       const response = await fetch('/api/settings');
-      if (!response.ok) throw new Error('Failed to load settings');
+      const data = await response.json();
+      const settings = data.settings || {};
 
-      const settings = await response.json();
-      const form = document.getElementById('settings-form') as HTMLFormElement;
-
-      if (form) {
-        Object.keys(settings).forEach(key => {
-          const input = form.elements.namedItem(key) as HTMLInputElement;
-          if (input && settings[key]) {
-            input.value = settings[key];
-          }
-        });
-
-        if (settings.heroImage) {
-          updatePreview(settings.heroImage);
-        }
-      }
+      (document.getElementById('brandName') as HTMLInputElement).value = settings.brandName || '';
+      (document.getElementById('email') as HTMLInputElement).value = settings.email || '';
+      (document.getElementById('whatsapp') as HTMLInputElement).value = settings.whatsapp || '';
+      (document.getElementById('workingHours') as HTMLInputElement).value = settings.workingHours || '';
+      (document.getElementById('instagram') as HTMLInputElement).value = settings.instagram || '';
+      (document.getElementById('facebook') as HTMLInputElement).value = settings.facebook || '';
+      (document.getElementById('address') as HTMLTextAreaElement).value = settings.address || '';
     } catch (error) {
       console.error('Error loading settings:', error);
     }
   }
-  
-  function updatePreview(url: string) {
-    const preview = document.getElementById('hero-preview');
-    if (preview && url) {
-      preview.innerHTML = `<img src="${url}" alt="Hero preview" />`;
-    }
-  }
-  
-  const form = document.getElementById('settings-form');
-  const heroInput = form?.elements.namedItem('heroImage') as HTMLInputElement;
-  const imageSelector = document.getElementById('image-selector') as HTMLSelectElement;
 
-  // Quando selecionar uma imagem do dropdown, atualizar o input
-  imageSelector?.addEventListener('change', (e) => {
-    const url = (e.target as HTMLSelectElement).value;
-    if (url && heroInput) {
-      heroInput.value = url;
-      updatePreview(url);
-    }
-  });
+  document.getElementById('save-settings')?.addEventListener('click', async () => {
+    const settings = {
+      brandName: (document.getElementById('brandName') as HTMLInputElement).value,
+      email: (document.getElementById('email') as HTMLInputElement).value,
+      whatsapp: (document.getElementById('whatsapp') as HTMLInputElement).value,
+      workingHours: (document.getElementById('workingHours') as HTMLInputElement).value,
+      instagram: (document.getElementById('instagram') as HTMLInputElement).value,
+      facebook: (document.getElementById('facebook') as HTMLInputElement).value,
+      address: (document.getElementById('address') as HTMLTextAreaElement).value,
+    };
 
-  heroInput?.addEventListener('input', (e) => {
-    const url = (e.target as HTMLInputElement).value;
-    if (url) updatePreview(url);
-  });
-  
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData(e.target as HTMLFormElement);
-    const settings = Object.fromEntries(formData.entries());
-    
+    if (!settings.brandName || !settings.email || !settings.whatsapp) {
+      alert('Preencha todos os campos obrigatórios');
+      return;
+    }
+
     try {
       const response = await fetch('/api/settings', {
-        method: 'PUT',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings)
       });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.details || 'Failed to save');
+
+      if (response.ok) {
+        alert('Configurações salvas com sucesso!');
+      } else {
+        throw new Error('Erro ao salvar');
       }
-      
-      alert('Configurações salvas com sucesso!');
-      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       console.error('Error saving settings:', error);
-      alert(`Erro ao salvar: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert('Erro ao salvar configurações');
     }
   });
-  
-  loadImages();
+
   loadSettings();
 </script>

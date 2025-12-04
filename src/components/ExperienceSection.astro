@@ -15,5 +15,29 @@ import AnimatedExperience from './solid/AnimatedExperience';
 <style>
   .experience-section {
     background: linear-gradient(180deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .experience-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      url('https://images.unsplash.com/photo-1678120074037-51063532a3b6?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+      linear-gradient(rgba(10, 10, 10, 0.92), rgba(10, 10, 10, 0.92));
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: overlay;
+    opacity: 0.1;
+    pointer-events: none;
+  }
+
+  .experience-section .container {
+    position: relative;
+    z-index: 1; 
   }
 </style>
