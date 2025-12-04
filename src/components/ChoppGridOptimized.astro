@@ -1,0 +1,271 @@
+---
+// ChoppGrid otimizado - Fetch + CSS puro + Intersection Observer
+---
+
+<div class="chopp-grid-container">
+  <div class="chopp-grid" id="chopp-grid">
+    <div class="loading-state">Carregando produtos...</div>
+  </div>
+</div>
+
+<style>
+  .chopp-grid-container {
+    width: 100%;
+  }
+
+  .chopp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+
+  .loading-state,
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .chopp-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1.5rem;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+
+  .chopp-card.visible {
+    animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes cardAppear {
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .chopp-card:hover {
+    transform: translateY(-12px);
+    border-color: var(--color-accent-gold);
+    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
+  }
+
+  .chopp-image {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    background: rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+  }
+
+  .chopp-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .chopp-card:hover .chopp-image img {
+    transform: scale(1.08);
+  }
+
+  .chopp-image-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 191, 0, 0.05));
+  }
+
+  .chopp-content {
+    padding: 2rem;
+  }
+
+  .chopp-category {
+    display: inline-block;
+    padding: 0.375rem 0.875rem;
+    background: rgba(212, 175, 55, 0.15);
+    color: var(--color-accent-gold);
+    border-radius: 1rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+  }
+
+  .chopp-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.875rem;
+    color: var(--color-text-primary);
+  }
+
+  .chopp-description,
+  .chopp-sensor {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  .chopp-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .chopp-price {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+
+  .chopp-price strong {
+    display: block;
+    font-size: 1.25rem;
+    color: var(--color-accent-gold);
+    font-weight: 800;
+    margin-top: 0.25rem;
+  }
+
+  /* Responsivo */
+  @media (max-width: 768px) {
+    .chopp-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .chopp-image {
+      height: 240px;
+    }
+
+    .chopp-content {
+      padding: 1.5rem;
+    }
+  }
+
+  @media (max-width: 359px) {
+    .chopp-grid {
+      gap: 1.25rem;
+    }
+
+    .chopp-image {
+      height: 200px;
+    }
+
+    .chopp-content {
+      padding: 1.25rem;
+    }
+
+    .chopp-name {
+      font-size: 1.25rem;
+    }
+
+    .chopp-description,
+    .chopp-sensor {
+      font-size: 0.875rem;
+    }
+
+    .chopp-footer {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .btn-sm {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chopp-card {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>
+
+<script>
+  // Fetch e render de produtos com JS mínimo
+  const grid = document.getElementById('chopp-grid');
+
+  async function loadProducts() {
+    try {
+      const response = await fetch('/api/products');
+      const data = await response.json();
+      const featuredProducts = data.products.slice(0, 6);
+
+      if (featuredProducts.length === 0) {
+        if (grid) grid.innerHTML = '<div class="empty-state">Nenhum produto cadastrado</div>';
+        return;
+      }
+
+      if (grid) {
+        grid.innerHTML = featuredProducts.map((product: any) => {
+          const imageUrl = product.imageUrl || product.image || '';
+          return `
+            <div class="chopp-card" style="--delay: ${Math.random() * 0.3}s">
+              <div class="chopp-image">
+                ${imageUrl ? `
+                  <img
+                    src="${imageUrl}"
+                    alt="${product.name}"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ` : `
+                  <div class="chopp-image-placeholder">🍺</div>
+                `}
+              </div>
+              <div class="chopp-content">
+                <span class="chopp-category">${product.category}</span>
+                <h3 class="chopp-name">${product.name}</h3>
+                <p class="chopp-description">${product.description}</p>
+                <p class="chopp-sensor">${product.sensorNotes || product.sensor_notes || ''}</p>
+                <div class="chopp-footer">
+                  <span class="chopp-price">
+                    A partir de <strong>R$ ${product.pricePerLiter.toFixed(2)}/L</strong>
+                  </span>
+                  <a href="/loja" class="btn btn-secondary btn-sm">Ver mais</a>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Intersection Observer para animações
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry, index) => {
+              if (entry.isIntersecting) {
+                setTimeout(() => {
+                  entry.target.classList.add('visible');
+                }, index * 100);
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.1, rootMargin: '0px 0px -100px 0px' }
+        );
+
+        const cards = grid.querySelectorAll('.chopp-card');
+        cards.forEach(card => observer.observe(card));
+      }
+    } catch (error) {
+      console.error('Error loading products:', error);
+      if (grid) grid.innerHTML = '<div class="empty-state">Erro ao carregar produtos</div>';
+    }
+  }
+
+  loadProducts();
+</script>
