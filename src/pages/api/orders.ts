@@ -34,10 +34,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     const order = await request.json();
-    
+
     if (!order.customerName || !order.customerPhone || !order.items || order.items.length === 0) {
       return new Response(
-        JSON.stringify({ error: 'Dados inválidos' }),
+        JSON.stringify({ error: 'Dados inválidos: Nome, telefone e itens são obrigatórios' }),
         {
           status: 400,
           headers: { 'Content-Type': 'application/json' }
@@ -46,21 +46,28 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     const newOrder = {
-      ...order,
       id: order.id || `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      customerName: order.customerName,
+      customerPhone: order.customerPhone,
+      customerEmail: order.customerEmail || '',
+      paymentMethod: order.paymentMethod || 'Dinheiro',
+      items: order.items,
+      total: order.total || 0,
+      status: order.status || 'pending',
       createdAt: order.createdAt || new Date().toISOString(),
-      status: order.status || 'pending'
+      deliveryDate: order.deliveryDate || null,
+      address: order.address || ''
     };
-    
+
     await locals.db.createOrder(newOrder);
-    
+
     return new Response(JSON.stringify({ success: true, order: newOrder }), {
-      status: 200,
+      status: 201,
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
     console.error('Error creating order:', error);
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       error: 'Failed to create order',
       details: error instanceof Error ? error.message : 'Unknown error'
     }), {
