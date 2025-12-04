@@ -76,9 +76,9 @@ export const PUT: APIRoute = async ({ request, locals }) => {
       throw new Error('Database not initialized');
     }
 
-    const order = await request.json();
-    
-    if (!order.id) {
+    const data = await request.json();
+
+    if (!data.id) {
       return new Response(
         JSON.stringify({ error: 'ID do pedido é obrigatório' }),
         {
@@ -87,16 +87,17 @@ export const PUT: APIRoute = async ({ request, locals }) => {
         }
       );
     }
-    
-    await locals.db.updateOrder(order.id, order);
-    
-    return new Response(JSON.stringify({ success: true, order }), {
+
+    const { id, ...orderData } = data;
+    await locals.db.updateOrder(id, orderData);
+
+    return new Response(JSON.stringify({ success: true, order: data }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
     console.error('Error updating order:', error);
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       error: 'Failed to update order',
       details: error instanceof Error ? error.message : 'Unknown error'
     }), {
