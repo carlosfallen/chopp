@@ -1,0 +1,277 @@
+---
+// Calculadora otimizada - Astro puro com JS mínimo
+---
+
+<div class="calculator-container" id="calc-container">
+  <div class="calculator-form">
+    <div class="form-group">
+      <label for="guests">Número de convidados</label>
+      <input
+        type="number"
+        id="guests"
+        name="guests"
+        min="1"
+        placeholder="Ex: 50"
+        required
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="hours">Duração do evento (horas)</label>
+      <input
+        type="number"
+        id="hours"
+        name="hours"
+        min="1"
+        placeholder="Ex: 4"
+        required
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="profile">Perfil do público</label>
+      <select id="profile" name="profile">
+        <option value="leve">Bebe pouco</option>
+        <option value="moderado" selected>Moderado</option>
+        <option value="intenso">Bebe bem</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary btn-block" id="calc-btn" type="button">
+      Calcular quantidade
+    </button>
+  </div>
+
+  <div class="calculator-result" id="calc-result" style="display: none;">
+    <h3>Resultado:</h3>
+    <p id="result-text"></p>
+    <a
+      href="#"
+      id="whatsapp-link"
+      class="btn btn-primary"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Garantir meu chopp
+    </a>
+  </div>
+</div>
+
+<style>
+  .calculator-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .calculator-form {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.75rem;
+  }
+
+  .form-group:last-of-type {
+    margin-bottom: 2rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.875rem;
+    color: #fff;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: var(--color-accent-gold);
+    background: rgba(212, 175, 55, 0.08);
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+  }
+
+  .form-group input:hover,
+  .form-group select:hover {
+    border-color: rgba(212, 175, 55, 0.4);
+  }
+
+  .form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .form-group select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23d4af37' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 3rem;
+  }
+
+  .calculator-result {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: rgba(212, 175, 55, 0.1);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    border-radius: 1.25rem;
+    text-align: center;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .calculator-result h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-accent-gold);
+  }
+
+  .calculator-result p {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Responsivo */
+  @media (max-width: 768px) {
+    .calculator-form {
+      padding: 2rem 1.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .calculator-form {
+      padding: 1.5rem 1.25rem;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 0.875rem 1rem;
+      font-size: 0.9375rem;
+    }
+
+    .calculator-result {
+      padding: 1.5rem;
+    }
+  }
+
+  @media (max-width: 359px) {
+    .calculator-form {
+      padding: 1.25rem 1rem;
+      border-radius: 1.25rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      font-size: 0.875rem;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 0.75rem 0.875rem;
+      font-size: 0.875rem;
+    }
+
+    .calculator-result {
+      padding: 1.25rem 1rem;
+    }
+
+    .calculator-result h3 {
+      font-size: 1.25rem;
+    }
+
+    .calculator-result p {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<script>
+  // JS mínimo e eficiente
+  const form = document.getElementById('calc-container');
+  const btn = document.getElementById('calc-btn');
+  const result = document.getElementById('calc-result');
+  const resultText = document.getElementById('result-text');
+  const whatsappLink = document.getElementById('whatsapp-link') as HTMLAnchorElement;
+
+  const guestsInput = document.getElementById('guests') as HTMLInputElement;
+  const hoursInput = document.getElementById('hours') as HTMLInputElement;
+  const profileSelect = document.getElementById('profile') as HTMLSelectElement;
+
+  btn?.addEventListener('click', () => {
+    const guests = parseInt(guestsInput.value) || 0;
+    const hours = parseInt(hoursInput.value) || 0;
+    const profile = profileSelect.value;
+
+    if (guests <= 0 || hours <= 0) {
+      alert('Por favor, preencha todos os campos com valores válidos.');
+      return;
+    }
+
+    const factors: Record<string, number> = {
+      leve: 0.3,
+      moderado: 0.5,
+      intenso: 0.7
+    };
+
+    const factor = factors[profile] || 0.5;
+    const liters = Math.ceil(guests * hours * factor);
+    const barrels30 = Math.ceil(liters / 30);
+    const barrels50 = Math.ceil(liters / 50);
+
+    const message = `Recomendamos aproximadamente ${liters}L de chopp, equivalente a ${barrels30} barril(is) de 30L ou ${barrels50} barril(is) de 50L.`;
+
+    if (resultText) resultText.textContent = message;
+    if (result) result.style.display = 'block';
+
+    // WhatsApp link
+    const whatsappMsg = encodeURIComponent(
+      `Olá! Calculei meu chopp: ${liters}L para ${guests} pessoas por ${hours}h. Gostaria de fazer um pedido.`
+    );
+    if (whatsappLink) {
+      whatsappLink.href = `https://wa.me/5589994333316?text=${whatsappMsg}`;
+    }
+
+    // Scroll suave até o resultado
+    result?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+
+  // Enter para calcular
+  [guestsInput, hoursInput].forEach(input => {
+    input?.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') btn?.click();
+    });
+  });
+</script>
