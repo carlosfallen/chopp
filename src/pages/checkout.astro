@@ -582,6 +582,8 @@ import Layout from '../layouts/Layout.astro';
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         customerName: name,
         customerPhone: phone,
+        customerEmail: '',
+        paymentMethod: 'Dinheiro',
         items: items.map(item => ({
           productId: item.id,
           productName: item.name,
